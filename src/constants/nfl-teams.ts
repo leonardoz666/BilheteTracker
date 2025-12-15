@@ -238,8 +238,14 @@ export const NFL_TEAM_ALIASES: Record<string, string> = {
   "Seahawks": "Seattle Seahawks",
   "SEA": "Seattle Seahawks",
 
-  // Variações comuns
+  // Variações comuns e erros de OCR
   "POR Trail Blazers": "Portland Trail Blazers", // Erro comum no OCR
+  "Pats": "New England Patriots",
+  "Niners": "San Francisco 49ers",
+  "The Pack": "Green Bay Packers",
+  "G-Men": "New York Giants",
+  "Birds": "Philadelphia Eagles",
+  "Fish": "Miami Dolphins",
 };
 
 /**
