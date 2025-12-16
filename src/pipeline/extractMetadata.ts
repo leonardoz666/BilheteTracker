@@ -101,36 +101,84 @@ function hasFootballKeywords(lines: string[]): boolean {
   return FOOTBALL_KEYWORDS.some(keyword => keyword.test(fullText));
 }
 
+/**
+ * Detecta padrão de confronto (Time A x Time B ou Time A vs Time B)
+ * mas APENAS se não houver times NBA/NFL/MLB reconhecidos
+ */
+function hasVersusPatternWithoutOtherSports(
+  lines: string[],
+  nbaTeams: readonly string[],
+  nflTeams: readonly string[],
+  mlbTeams: readonly string[]
+): boolean {
+  const versusPattern = /\b.+?\s+(x|vs|versus)\s+.+?\b/i;
+  const hasVersusLine = lines.some(line => versusPattern.test(line));
+  
+  if (!hasVersusLine) return false;
+  
+  // Verifica se há times de outras ligas nas linhas
+  const fullText = lines.join(' ').toLowerCase();
+  
+  // Se encontrar times NBA/NFL/MLB, não considera versus como evidência de futebol
+  const hasNBATeam = nbaTeams.some(team => 
+    new RegExp(`\\b${team.toLowerCase()}\\b`, 'i').test(fullText)
+  );
+  const hasNFLTeam = nflTeams.some(team => 
+    new RegExp(`\\b${team.toLowerCase()}\\b`, 'i').test(fullText)
+  );
+  const hasMLBTeam = mlbTeams.some(team => 
+    new RegExp(`\\b${team.toLowerCase()}\\b`, 'i').test(fullText)
+  );
+  
+  // Versus só é evidência de futebol se NÃO houver times de outras ligas
+  return !hasNBATeam && !hasNFLTeam && !hasMLBTeam;
+}
+
+/**
+ * Busca por times de futebol nas linhas
+ */
+function findFootballTeams(lines: string[]): { found: boolean; lineIdx: number | null } {
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    
+    // Verifica palavras individuais
+    const words = line.split(/\s+/);
+    for (const word of words) {
+      if (normalizeFootballClub(word)) {
+        return { found: true, lineIdx: i };
+      }
+    }
+    
+    // Verifica linha completa
+    if (normalizeFootballClub(line.trim())) {
+      return { found: true, lineIdx: i };
+    }
+  }
+  
+  return { found: false, lineIdx: null };
+}
+
 function extractEsporte(lines: string[]): { esporte: string | null; consumedIdx: number | null } {
-  // PRIORIDADE 1: Detectar futebol primeiro quando há keywords fortes
-  // Isso evita que aliases fracos de outras ligas interfiram
+  // PRIORIDADE 1: Futebol com evidência positiva (hard gate)
+  // Regra: keywords + (clube OU padrão x/versus SEM times de outras ligas) → curto-circuito para FUTEBOL
   const hasFootballContext = hasFootballKeywords(lines);
   
   if (hasFootballContext) {
-    // Busca times de futebol quando há contexto claro de futebol
-    let footballTeamFound = false;
-    let footballLineIdx: number | null = null;
+    const { found: hasClub, lineIdx: clubLineIdx } = findFootballTeams(lines);
+    const hasVersus = hasVersusPatternWithoutOtherSports(
+      lines,
+      NBA_CURRENT_TEAMS,
+      NFL_CURRENT_TEAMS,
+      MLB_CURRENT_TEAMS
+    );
     
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
-      const words = line.split(/\s+/);
-      for (const word of words) {
-        if (normalizeFootballClub(word)) {
-          footballTeamFound = true;
-          if (footballLineIdx === null) footballLineIdx = i;
-          break;
-        }
-      }
-      if (!footballTeamFound && normalizeFootballClub(line.trim())) {
-        footballTeamFound = true;
-        if (footballLineIdx === null) footballLineIdx = i;
-      }
+    // ✅ Evidência positiva: clube reconhecido OU padrão de confronto (sem outras ligas)
+    if (hasClub || hasVersus) {
+      return { esporte: "Futebol", consumedIdx: clubLineIdx };
     }
-
-    // Com keywords de futebol + time de futebol = Futebol
-    if (footballTeamFound) {
-      return { esporte: "Futebol", consumedIdx: footballLineIdx };
-    }
+    
+    // ❌ Sem evidência positiva: não faz curto-circuito
+    // Deixa o scorer decidir (pode ser NBA/NFL com keywords ambíguas)
   }
 
   // PRIORIDADE 2: Scoring por liga específica (NBA > NFL > MLB)
