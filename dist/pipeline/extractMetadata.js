@@ -66,8 +66,79 @@ function extractValorApostado(lines) {
     ];
     return extractLabeledAmount(lines, labels);
 }
+// Keywords que indicam contexto de futebol
+const FOOTBALL_KEYWORDS = [
+    /\bgols?\b/i,
+    /\bchutes?\b/i,
+    /\bescanteios?\b/i,
+    /\bcart[õo]es?\b/i,
+    /\bdefesas?\b/i,
+    /\bplacar\b/i,
+    /\bpasses?\b/i,
+    /\bfalta?s?\b/i,
+    /\bimpedimentos?\b/i,
+    /\bpenalt[yi]s?\b/i,
+    /\bambas\s+marcam\b/i,
+    /\bboth\s+teams\s+to\s+score\b/i,
+    /\bbtts\b/i,
+];
+function hasFootballKeywords(lines) {
+    const fullText = lines.join(' ').toLowerCase();
+    return FOOTBALL_KEYWORDS.some(keyword => keyword.test(fullText));
+}
+/**
+ * Detecta padrão de confronto (Time A x Time B ou Time A vs Time B)
+ * mas APENAS se não houver times NBA/NFL/MLB reconhecidos
+ */
+function hasVersusPatternWithoutOtherSports(lines, nbaTeams, nflTeams, mlbTeams) {
+    const versusPattern = /\b.+?\s+(x|vs|versus)\s+.+?\b/i;
+    const hasVersusLine = lines.some(line => versusPattern.test(line));
+    if (!hasVersusLine)
+        return false;
+    // Verifica se há times de outras ligas nas linhas
+    const fullText = lines.join(' ').toLowerCase();
+    // Se encontrar times NBA/NFL/MLB, não considera versus como evidência de futebol
+    const hasNBATeam = nbaTeams.some(team => new RegExp(`\\b${team.toLowerCase()}\\b`, 'i').test(fullText));
+    const hasNFLTeam = nflTeams.some(team => new RegExp(`\\b${team.toLowerCase()}\\b`, 'i').test(fullText));
+    const hasMLBTeam = mlbTeams.some(team => new RegExp(`\\b${team.toLowerCase()}\\b`, 'i').test(fullText));
+    // Versus só é evidência de futebol se NÃO houver times de outras ligas
+    return !hasNBATeam && !hasNFLTeam && !hasMLBTeam;
+}
+/**
+ * Busca por times de futebol nas linhas
+ */
+function findFootballTeams(lines) {
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        // Verifica palavras individuais
+        const words = line.split(/\s+/);
+        for (const word of words) {
+            if ((0, football_clubs_1.normalizeFootballClub)(word)) {
+                return { found: true, lineIdx: i };
+            }
+        }
+        // Verifica linha completa
+        if ((0, football_clubs_1.normalizeFootballClub)(line.trim())) {
+            return { found: true, lineIdx: i };
+        }
+    }
+    return { found: false, lineIdx: null };
+}
 function extractEsporte(lines) {
-    // Scoring por liga: mais específico primeiro (NBA > NFL > MLB) e requer pelo menos um hit forte
+    // PRIORIDADE 1: Futebol com evidência positiva (hard gate)
+    // Regra: keywords + (clube OU padrão x/versus SEM times de outras ligas) → curto-circuito para FUTEBOL
+    const hasFootballContext = hasFootballKeywords(lines);
+    if (hasFootballContext) {
+        const { found: hasClub, lineIdx: clubLineIdx } = findFootballTeams(lines);
+        const hasVersus = hasVersusPatternWithoutOtherSports(lines, nba_teams_1.NBA_CURRENT_TEAMS, nfl_teams_1.NFL_CURRENT_TEAMS, mlb_teams_1.MLB_CURRENT_TEAMS);
+        // ✅ Evidência positiva: clube reconhecido OU padrão de confronto (sem outras ligas)
+        if (hasClub || hasVersus) {
+            return { esporte: "Futebol", consumedIdx: clubLineIdx };
+        }
+        // ❌ Sem evidência positiva: não faz curto-circuito
+        // Deixa o scorer decidir (pode ser NBA/NFL com keywords ambíguas)
+    }
+    // PRIORIDADE 2: Scoring por liga específica (NBA > NFL > MLB)
     const nbaScore = computeLeagueScore(lines, nba_teams_1.NBA_CURRENT_TEAMS, nba_teams_1.NBA_TEAM_ALIASES, "Basquete");
     const nflScore = computeLeagueScore(lines, nfl_teams_1.NFL_CURRENT_TEAMS, nfl_teams_1.NFL_TEAM_ALIASES, "Futebol Americano");
     const mlbScore = computeLeagueScore(lines, mlb_teams_1.MLB_CURRENT_TEAMS, mlb_teams_1.MLB_TEAM_ALIASES, "Beisebol");
@@ -86,18 +157,29 @@ function extractEsporte(lines) {
     if (best.score > 0 && best.name) {
         return { esporte: best.name, consumedIdx: best.consumedIdx };
     }
-    // Fallback: times de futebol (dicionário) – menos específico
+    // PRIORIDADE 3: Fallback - futebol sem keywords (menos confiável)
+    let footballTeamFound = false;
+    let footballLineIdx = null;
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
         const words = line.split(/\s+/);
         for (const word of words) {
             if ((0, football_clubs_1.normalizeFootballClub)(word)) {
-                return { esporte: "Futebol", consumedIdx: i };
+                footballTeamFound = true;
+                if (footballLineIdx === null)
+                    footballLineIdx = i;
+                break;
             }
         }
-        if ((0, football_clubs_1.normalizeFootballClub)(line.trim())) {
-            return { esporte: "Futebol", consumedIdx: i };
+        if (!footballTeamFound && (0, football_clubs_1.normalizeFootballClub)(line.trim())) {
+            footballTeamFound = true;
+            if (footballLineIdx === null)
+                footballLineIdx = i;
         }
+    }
+    // Sem keywords, só retorna futebol se encontrar time
+    if (footballTeamFound) {
+        return { esporte: "Futebol", consumedIdx: footballLineIdx };
     }
     return { esporte: null, consumedIdx: null };
 }

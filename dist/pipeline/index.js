@@ -26,6 +26,7 @@ exports.processBilhete = processBilhete;
 exports.processBilheteWithClient = processBilheteWithClient;
 const normalizeOcr_1 = require("../ocr/normalizeOcr");
 const semanticTicketLLM_1 = require("./semanticTicketLLM");
+const DEBUG = process.env.DEBUG_BILHETE === '1';
 // Pipeline simplificado: o normalizeOcr prepara as linhas e o
 // semanticTicketLLM se torna o INTÉRPRETE principal (LLM-first),
 // com fallback interno para regex + parser de apostas quando
@@ -34,10 +35,12 @@ async function processBilhete(input) {
     const normalized = (0, normalizeOcr_1.normalizeOcr)(input);
     // Log de diagnóstico para inspecionar exatamente o que o normalizeOcr
     // está entregando para o restante do pipeline.
-    console.log("🧪 NORMALIZED LINES ↓↓↓");
-    normalized.lines.forEach((l, i) => {
-        console.log(i, JSON.stringify(l));
-    });
+    if (DEBUG) {
+        console.log("🧪 NORMALIZED LINES ↓↓↓");
+        normalized.lines.forEach((l, i) => {
+            console.log(i, JSON.stringify(l));
+        });
+    }
     return (0, semanticTicketLLM_1.semanticTicketLLM)({ lines: normalized.lines });
 }
 // Variante que permite injetar um cliente LLM específico
@@ -45,10 +48,12 @@ async function processBilhete(input) {
 // mesma arquitetura LLM-first.
 async function processBilheteWithClient(input, client) {
     const normalized = (0, normalizeOcr_1.normalizeOcr)(input);
-    console.log("🧪 NORMALIZED LINES (with client) ↓↓↓");
-    normalized.lines.forEach((l, i) => {
-        console.log(i, JSON.stringify(l));
-    });
+    if (DEBUG) {
+        console.log("🧪 NORMALIZED LINES (with client) ↓↓↓");
+        normalized.lines.forEach((l, i) => {
+            console.log(i, JSON.stringify(l));
+        });
+    }
     return (0, semanticTicketLLM_1.semanticTicketLLM)({ lines: normalized.lines }, client);
 }
 __exportStar(require("../schema/bilhete.schema"), exports);

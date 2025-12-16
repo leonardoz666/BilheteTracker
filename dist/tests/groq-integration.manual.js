@@ -14,7 +14,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const semanticTicketLLM_1 = require("../pipeline/semanticTicketLLM");
 const groqLlmClient_1 = require("../utils/groqLlmClient");
 describe("Groq LLM Integration Tests", () => {
-    const apiKey = process.env.GROQ_API_KEY;
+    const apiKey = process.env.GROQ_API_KEY || (process.env.GROQ_API_KEYS?.split(/[,;\s]+/)?.[0] ?? undefined);
     // Skip todos testes se GROQ_API_KEY não configurada
     if (!apiKey) {
         console.warn("⚠️ GROQ_API_KEY não encontrada. Pulando testes de integração com Groq.");

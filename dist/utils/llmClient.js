@@ -260,6 +260,25 @@ class MockLlmClient {
                 });
                 continue;
             }
+            // Padrão: "TIME - ESTATÍSTICA (Mais de/Menos de X)" (Team Prop)
+            // Ex: "Chelsea - Mais de 5.5 escanteios"
+            // Ex: "Chelsea - Receber mais de 0.5 cartões"
+            const teamPropMatch = trimmed.match(/^([A-Z][a-zA-Z0-9\s]+?)\s*-\s*((?:Receber\s+)?(?:Mais de|Menos de|Over|Under))\s+(\d+(?:[.,]\d+)?)\s*([a-zA-Z\u00C0-\u00FF\s]+)/i);
+            if (teamPropMatch) {
+                const [, time, operador, valor, estatistica] = teamPropMatch;
+                apostas.push({
+                    tipo: 'team_prop',
+                    jogador: null,
+                    estatistica: estatistica.trim(),
+                    condicao: `${operador.trim()} ${valor}`,
+                    valor: parseFloat(valor.replace(',', '.')),
+                    time: time.trim(),
+                    timeAbrev: null,
+                    periodo: 'Jogo',
+                    confianca: 'alta',
+                });
+                continue;
+            }
         }
         // Retorna apostas parseadas
         return {
@@ -273,6 +292,13 @@ class MockLlmClient {
 exports.MockLlmClient = MockLlmClient;
 // Import do cliente real
 const groqLlmClient_1 = require("./groqLlmClient");
+const keyRotator_1 = require("./keyRotator");
+function maskKey(key) {
+    if (!key)
+        return "";
+    const tail = key.slice(-6);
+    return `***${tail}`;
+}
 // Instância default usada pelo pipeline.
 // Em testes (NODE_ENV=test), sempre usa MockLlmClient para evitar rate limit.
 // Em produção, usa GroqClient se GROQ_API_KEY disponível, senão fallback para MockLlmClient.
@@ -282,11 +308,18 @@ exports.defaultLlmClient = (() => {
         console.log("⚠️ Ambiente de teste detectado. Usando MockLlmClient");
         return new MockLlmClient();
     }
-    const apiKey = process.env.GROQ_API_KEY;
-    if (apiKey) {
-        console.log("✅ Usando GroqLlmClient real com GROQ_API_KEY");
-        return new groqLlmClient_1.GroqLlmClient({ apiKey });
+    const keys = (0, keyRotator_1.readKeysFromEnv)(process.env);
+    if (keys.length > 0) {
+        const rateLimitMs = Number(process.env.GROQ_RATE_LIMIT_COOLDOWN_MS || "") || undefined;
+        const rotator = new keyRotator_1.KeyRotator({ keys, rateLimitCooldownMs: rateLimitMs });
+        console.log(`✅ Usando GroqLlmClient real com ${keys.length} chave(s) Groq: ${keys
+            .map(maskKey)
+            .join(", ")}`);
+        return new groqLlmClient_1.GroqLlmClient({
+            getApiKey: () => rotator.nextKey(),
+            onKeyFailure: (key, status) => rotator.recordFailure(key, status),
+        });
     }
-    console.log("⚠️ GROQ_API_KEY não encontrado. Usando MockLlmClient (fallback)");
+    console.log("⚠️ GROQ_API_KEYS/GROQ_API_KEY não encontrados. Usando MockLlmClient (fallback)");
     return new MockLlmClient();
 })();

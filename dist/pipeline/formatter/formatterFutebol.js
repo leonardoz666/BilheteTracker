@@ -20,6 +20,15 @@ function formatFutebol(aposta) {
             const isCadaTime = aposta.time === 'cada time' || (aposta.condicao && aposta.condicao.includes('cada time'));
             const condicaoLimpa = aposta.condicao ? aposta.condicao.replace('cada time', '').trim() : '';
             const prefix = isCadaTime && condicaoLimpa ? 'cada time ' : '';
+            // Se tem time específico (ex: Chelsea), ele vem primeiro
+            if (aposta.time && !isCadaTime) {
+                if (aposta.estatistica && aposta.condicao) {
+                    return `${aposta.time} - ${aposta.estatistica} - ${aposta.condicao}`.trim();
+                }
+                if (aposta.estatistica) {
+                    return `${aposta.time} - ${aposta.estatistica}`.trim();
+                }
+            }
             if (aposta.estatistica && condicaoLimpa) {
                 return `${aposta.estatistica} - ${prefix}${condicaoLimpa}`.trim();
             }

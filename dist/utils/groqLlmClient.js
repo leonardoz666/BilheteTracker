@@ -10,11 +10,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.GroqLlmClient = void 0;
 exports.createGroqLlmClient = createGroqLlmClient;
 const node_fetch_1 = __importDefault(require("node-fetch"));
+const keyRotator_1 = require("./keyRotator");
 const GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions";
 const GROQ_MODEL = "llama-3.1-8b-instant";
 class GroqLlmClient {
     constructor(options = {}) {
-        const key = options.apiKey || process.env.GROQ_API_KEY;
+        this.getApiKey = options.getApiKey;
+        this.onKeyFailure = options.onKeyFailure;
+        const key = options.apiKey || process.env.GROQ_API_KEY || (this.getApiKey ? this.getApiKey() : undefined);
         if (!key) {
             throw new Error("GROQ_API_KEY não definido. Informe via options.apiKey ou variável de ambiente.");
         }
@@ -67,6 +70,11 @@ Regras semânticas importantes:
   da linha, interprete isso como abreviação do time e preencha o campo
   "timeAbrev" com esse valor, sem tratá-lo como período.
 
+- 🎯 Regra para TEAM PROPS (Apostas de Time):
+  Se a linha começar com o nome de um time (ou abreviação) seguido de uma estatística,
+  Trate como "team_prop" e EXTRAIA o nome para o campo "time".
+  Exemplo: "Chelsea - Mais de 0.5 cartões" -> tipo: "team_prop", time: "Chelsea", estatistica: "Cartões", condicao: "Mais de 0.5"
+
 Regras específicas para apostas de vencedor (winner/moneyline):
 - Se uma linha começar com prefixos como:
   * "Vencedor - TIME"
@@ -90,47 +98,90 @@ Regras adicionais:
   Use "media" como padrão quando não tiver segurança sobre o nível de confiança.
 - Responda SEMPRE apenas o JSON, sem texto extra.`;
         const userPrompt = `Linhas extraídas do bilhete (podem ter apostas e outros textos):\n${contentLines}`;
-        const res = await (0, node_fetch_1.default)(GROQ_ENDPOINT, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${this.apiKey}`,
-            },
-            body: JSON.stringify({
-                model: GROQ_MODEL,
-                temperature: 0.1,
-                messages: [
-                    { role: "system", content: systemPrompt },
-                    { role: "user", content: userPrompt },
-                ],
-            }),
-        });
-        if (!res.ok) {
-            const text = await res.text().catch(() => "");
-            throw new Error(`Erro na chamada à API Groq: ${res.status} ${res.statusText} - ${text}`);
-        }
-        const json = await res.json();
-        const content = json?.choices?.[0]?.message?.content;
-        if (typeof content !== "string") {
-            return { apostas: [] };
-        }
+        const timeout = 30000; // 30s timeout para LLM
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeout);
         try {
-            const parsed = JSON.parse(content);
-            if (!parsed || !Array.isArray(parsed.apostas)) {
+            // Atualiza chave dinâmica se disponível
+            if (this.getApiKey)
+                this.apiKey = this.getApiKey();
+            let res = await (0, node_fetch_1.default)(GROQ_ENDPOINT, {
+                signal: controller.signal,
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.apiKey}`,
+                },
+                body: JSON.stringify({
+                    model: GROQ_MODEL,
+                    temperature: 0.1,
+                    messages: [
+                        { role: "system", content: systemPrompt },
+                        { role: "user", content: userPrompt },
+                    ],
+                }),
+            });
+            if (!res.ok) {
+                // Em caso de 429/401/403, tenta trocar de chave e refazer 1 vez
+                if ((res.status === 429 || res.status === 401 || res.status === 403) && this.getApiKey) {
+                    const failedKey = this.apiKey;
+                    if (this.onKeyFailure)
+                        this.onKeyFailure(failedKey, res.status);
+                    this.apiKey = this.getApiKey();
+                    res = await (0, node_fetch_1.default)(GROQ_ENDPOINT, {
+                        signal: controller.signal,
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${this.apiKey}`,
+                        },
+                        body: JSON.stringify({
+                            model: GROQ_MODEL,
+                            temperature: 0.1,
+                            messages: [
+                                { role: "system", content: systemPrompt },
+                                { role: "user", content: userPrompt },
+                            ],
+                        }),
+                    });
+                }
+                if (!res.ok) {
+                    const text = await res.text().catch(() => "");
+                    throw new Error(`Erro na chamada à API Groq: ${res.status} ${res.statusText} - ${text}`);
+                }
+            }
+            const json = await res.json();
+            const content = json?.choices?.[0]?.message?.content;
+            if (typeof content !== "string") {
                 return { apostas: [] };
             }
-            // Garantir que confianca sempre tenha um valor válido (fallback para "media")
-            const apostasComFallback = parsed.apostas.map((a) => ({
-                ...a,
-                confianca: a.confianca && ["alta", "media", "baixa"].includes(a.confianca)
-                    ? a.confianca
-                    : "media",
-            }));
-            return { apostas: apostasComFallback };
+            try {
+                const parsed = JSON.parse(content);
+                if (!parsed || !Array.isArray(parsed.apostas)) {
+                    return { apostas: [] };
+                }
+                // Garantir que confianca sempre tenha um valor válido (fallback para "media")
+                const apostasComFallback = parsed.apostas.map((a) => ({
+                    ...a,
+                    confianca: a.confianca && ["alta", "media", "baixa"].includes(a.confianca)
+                        ? a.confianca
+                        : "media",
+                }));
+                return { apostas: apostasComFallback };
+            }
+            catch (parseErr) {
+                // Se a IA não respeitar o formato, voltamos com lista vazia
+                return { apostas: [] };
+            }
         }
-        catch {
-            // Se a IA não respeitar o formato, voltamos com lista vazia
-            return { apostas: [] };
+        catch (err) {
+            if (err.name === 'AbortError') {
+                throw new Error(`Timeout (${timeout}ms) ao chamar Groq API`);
+            }
+            throw err;
+        }
+        finally {
+            clearTimeout(timeoutId);
         }
     }
     async callTicketParser(lines) {
@@ -193,6 +244,12 @@ Instruções de interpretação das apostas (INTENÇÃO):
   qualquer sequência de 2 a 4 letras maiúsculas entre parênteses NO FIM
   da linha, interprete isso como abreviação do time e preencha o campo
   "timeAbrev" com esse valor, sem tratá-lo como período.
+
+- 🎯 Regra para TEAM PROPS (Apostas de Time):
+  Se a linha começar com o nome de um time (ou abreviação) seguido de uma estatística,
+  Trate como "team_prop" e EXTRAIA o nome para o campo "time".
+  Exemplo: "Chelsea - Mais de 0.5 cartões" -> tipo: "team_prop", time: "Chelsea", estatistica: "Cartões", condicao: "Mais de 0.5"
+  Exemplo: "Flamengo - Escanteios Mais de 5.5" -> tipo: "team_prop", time: "Flamengo", estatistica: "Escanteios", condicao: "Mais de 5.5"
 
 Instruções adicionais para apostas de vencedor (winner/moneyline):
 - Se uma linha começar com prefixos como:
@@ -364,92 +421,154 @@ Regras gerais adicionais:
 
 Agora, aqui estão as linhas do bilhete (uma por linha):
 ${lines.join("\n")}`;
-        const res = await (0, node_fetch_1.default)(GROQ_ENDPOINT, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${this.apiKey}`,
-            },
-            body: JSON.stringify({
-                model: GROQ_MODEL,
-                temperature: 0.2,
-                response_format: { type: "json_object" },
-                messages: [
-                    {
-                        role: "system",
-                        content: "Você analisa bilhetes de apostas esportivas a partir de texto OCR e responde apenas com JSON válido.",
-                    },
-                    { role: "user", content: prompt },
-                ],
-            }),
-        });
-        if (!res.ok) {
-            const text = await res.text().catch(() => "");
-            throw new Error(`Erro na chamada à API Groq (ticket): ${res.status} ${res.statusText} - ${text}`);
-        }
-        const json = await res.json();
-        const content = json?.choices?.[0]?.message?.content;
-        if (typeof content !== "string") {
-            return {
-                esporte: null,
-                torneio: null,
-                evento: null,
-                valorApostado: null,
-                odd: null,
-                retornoPotencial: null,
-                tipo: null,
-                data: null,
-                bonus: null,
-                aposta: "",
-                mercado: "",
-                apostasDetalhadas: [],
-            };
-        }
+        const timeout = 30000; // 30s timeout para LLM
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeout);
         try {
-            const parsed = JSON.parse(content);
-            // Garantir que confianca sempre tenha um valor válido em apostasDetalhadas
-            const apostasComFallback = (Array.isArray(parsed.apostasDetalhadas)
-                ? parsed.apostasDetalhadas
-                : []).map((a) => ({
-                ...a,
-                confianca: a.confianca && ["alta", "media", "baixa"].includes(a.confianca)
-                    ? a.confianca
-                    : "media",
-            }));
-            return {
-                esporte: parsed.esporte ?? null,
-                torneio: parsed.torneio ?? null,
-                evento: parsed.evento ?? null,
-                valorApostado: parsed.valorApostado ?? null,
-                odd: parsed.odd ?? null,
-                retornoPotencial: parsed.retornoPotencial ?? null,
-                tipo: parsed.tipo ?? null,
-                data: parsed.data ?? null,
-                bonus: parsed.bonus ?? null,
-                aposta: parsed.aposta ?? "",
-                mercado: parsed.mercado ?? "",
-                apostasDetalhadas: apostasComFallback,
-            };
+            // Atualiza chave dinâmica se disponível
+            if (this.getApiKey)
+                this.apiKey = this.getApiKey();
+            let res = await (0, node_fetch_1.default)(GROQ_ENDPOINT, {
+                signal: controller.signal,
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${this.apiKey}`,
+                },
+                body: JSON.stringify({
+                    model: GROQ_MODEL,
+                    temperature: 0.2,
+                    response_format: { type: "json_object" },
+                    messages: [
+                        {
+                            role: "system",
+                            content: "Você analisa bilhetes de apostas esportivas a partir de texto OCR e responde apenas com JSON válido.",
+                        },
+                        { role: "user", content: prompt },
+                    ],
+                }),
+            });
+            if (!res.ok) {
+                // Em caso de 429/401/403, tenta trocar de chave e refazer 1 vez
+                if ((res.status === 429 || res.status === 401 || res.status === 403) && this.getApiKey) {
+                    const failedKey = this.apiKey;
+                    if (this.onKeyFailure)
+                        this.onKeyFailure(failedKey, res.status);
+                    this.apiKey = this.getApiKey();
+                    res = await (0, node_fetch_1.default)(GROQ_ENDPOINT, {
+                        signal: controller.signal,
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${this.apiKey}`,
+                        },
+                        body: JSON.stringify({
+                            model: GROQ_MODEL,
+                            temperature: 0.2,
+                            response_format: { type: "json_object" },
+                            messages: [
+                                {
+                                    role: "system",
+                                    content: "Você analisa bilhetes de apostas esportivas a partir de texto OCR e responde apenas com JSON válido.",
+                                },
+                                { role: "user", content: prompt },
+                            ],
+                        }),
+                    });
+                }
+                if (!res.ok) {
+                    const text = await res.text().catch(() => "");
+                    throw new Error(`Erro na chamada à API Groq (ticket): ${res.status} ${res.statusText} - ${text}`);
+                }
+            }
+            const json = await res.json();
+            const content = json?.choices?.[0]?.message?.content;
+            if (typeof content !== "string") {
+                return {
+                    esporte: null,
+                    torneio: null,
+                    evento: null,
+                    valorApostado: null,
+                    odd: null,
+                    retornoPotencial: null,
+                    tipo: null,
+                    data: null,
+                    bonus: null,
+                    aposta: "",
+                    mercado: "",
+                    apostasDetalhadas: [],
+                };
+            }
+            try {
+                const parsed = JSON.parse(content);
+                // Garantir que confianca sempre tenha um valor válido em apostasDetalhadas
+                const apostasComFallback = (Array.isArray(parsed.apostasDetalhadas)
+                    ? parsed.apostasDetalhadas
+                    : []).map((a) => ({
+                    ...a,
+                    confianca: a.confianca && ["alta", "media", "baixa"].includes(a.confianca)
+                        ? a.confianca
+                        : "media",
+                }));
+                return {
+                    esporte: parsed.esporte ?? null,
+                    torneio: parsed.torneio ?? null,
+                    evento: parsed.evento ?? null,
+                    valorApostado: parsed.valorApostado ?? null,
+                    odd: parsed.odd ?? null,
+                    retornoPotencial: parsed.retornoPotencial ?? null,
+                    tipo: parsed.tipo ?? null,
+                    data: parsed.data ?? null,
+                    bonus: parsed.bonus ?? null,
+                    aposta: parsed.aposta ?? "",
+                    mercado: parsed.mercado ?? "",
+                    apostasDetalhadas: apostasComFallback,
+                };
+            }
+            catch (parseErr) {
+                return {
+                    esporte: null,
+                    torneio: null,
+                    evento: null,
+                    valorApostado: null,
+                    odd: null,
+                    retornoPotencial: null,
+                    tipo: null,
+                    data: null,
+                    bonus: null,
+                    aposta: "",
+                    mercado: "",
+                    apostasDetalhadas: [],
+                };
+            }
         }
-        catch {
-            return {
-                esporte: null,
-                torneio: null,
-                evento: null,
-                valorApostado: null,
-                odd: null,
-                retornoPotencial: null,
-                tipo: null,
-                data: null,
-                bonus: null,
-                aposta: "",
-                mercado: "",
-                apostasDetalhadas: [],
-            };
+        catch (err) {
+            if (err.name === 'AbortError') {
+                throw new Error(`Timeout (${timeout}ms) ao chamar Groq API (ticket)`);
+            }
+            throw err;
+        }
+        finally {
+            clearTimeout(timeoutId);
         }
     }
 }
 exports.GroqLlmClient = GroqLlmClient;
 function createGroqLlmClient(options = {}) {
-    return new GroqLlmClient(options);
+    // Se já recebeu getApiKey/apiKey, apenas repassa
+    if (options.apiKey || options.getApiKey) {
+        return new GroqLlmClient(options);
+    }
+    // Lê múltiplas chaves do env (GROQ_API_KEYS ou GROQ_API_KEY)
+    const keys = (0, keyRotator_1.readKeysFromEnv)(process.env);
+    if (keys.length > 0) {
+        const rateLimitMs = Number(process.env.GROQ_RATE_LIMIT_COOLDOWN_MS || "") || undefined;
+        const rotator = new keyRotator_1.KeyRotator({ keys, rateLimitCooldownMs: rateLimitMs });
+        return new GroqLlmClient({
+            getApiKey: () => rotator.nextKey(),
+            onKeyFailure: (key, status) => rotator.recordFailure(key, status),
+        });
+    }
+    // Mantém comportamento anterior (vai lançar se não houver chave)
+    return new GroqLlmClient({});
 }
