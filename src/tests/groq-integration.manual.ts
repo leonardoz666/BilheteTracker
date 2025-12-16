@@ -14,7 +14,7 @@ import { semanticTicketLLM } from "../pipeline/semanticTicketLLM";
 import { GroqLlmClient } from "../utils/groqLlmClient";
 
 describe("Groq LLM Integration Tests", () => {
-  const apiKey = process.env.GROQ_API_KEY;
+  const apiKey = process.env.GROQ_API_KEY || (process.env.GROQ_API_KEYS?.split(/[,;\s]+/)?.[0] ?? undefined);
   
   // Skip todos testes se GROQ_API_KEY não configurada
   if (!apiKey) {

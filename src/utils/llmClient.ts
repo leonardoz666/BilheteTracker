@@ -316,6 +316,13 @@ export class MockLlmClient implements TicketLlmClient {
 
 // Import do cliente real
 import { GroqLlmClient } from "./groqLlmClient";
+import { KeyRotator, readKeysFromEnv } from "./keyRotator";
+
+function maskKey(key: string): string {
+  if (!key) return "";
+  const tail = key.slice(-6);
+  return `***${tail}`;
+}
 
 // Instância default usada pelo pipeline.
 // Em testes (NODE_ENV=test), sempre usa MockLlmClient para evitar rate limit.
@@ -328,12 +335,21 @@ export const defaultLlmClient: TicketLlmClient = (() => {
     return new MockLlmClient();
   }
   
-  const apiKey = process.env.GROQ_API_KEY;
-  if (apiKey) {
-    console.log("✅ Usando GroqLlmClient real com GROQ_API_KEY");
-    return new GroqLlmClient({ apiKey });
+  const keys = readKeysFromEnv(process.env);
+  if (keys.length > 0) {
+    const rateLimitMs = Number(process.env.GROQ_RATE_LIMIT_COOLDOWN_MS || "") || undefined;
+    const rotator = new KeyRotator({ keys, rateLimitCooldownMs: rateLimitMs });
+    console.log(
+      `✅ Usando GroqLlmClient real com ${keys.length} chave(s) Groq: ${keys
+        .map(maskKey)
+        .join(", ")}`,
+    );
+    return new GroqLlmClient({
+      getApiKey: () => rotator.nextKey(),
+      onKeyFailure: (key, status) => rotator.recordFailure(key, status),
+    });
   }
-  
-  console.log("⚠️ GROQ_API_KEY não encontrado. Usando MockLlmClient (fallback)");
+
+  console.log("⚠️ GROQ_API_KEYS/GROQ_API_KEY não encontrados. Usando MockLlmClient (fallback)");
   return new MockLlmClient();
 })();

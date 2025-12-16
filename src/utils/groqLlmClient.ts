@@ -6,19 +6,26 @@
 import fetch from "node-fetch";
 import { BilheteFinal, ResultadoSemanticoLLM } from "../schema/bilhete.schema";
 import { LlmClient, TicketLlmClient } from "./llmClient";
+import { KeyRotator, readKeysFromEnv } from "./keyRotator";
 
 const GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions";
 const GROQ_MODEL = "llama-3.1-8b-instant";
 
 export type GroqLlmClientOptions = {
   apiKey?: string; // se não informado, usa process.env.GROQ_API_KEY
+  getApiKey?: () => string; // permite rotação dinâmica por chamada
+  onKeyFailure?: (key: string, status?: number) => void; // notifica falha para backoff externo
 };
 
 export class GroqLlmClient implements TicketLlmClient {
-  private readonly apiKey: string;
+  private apiKey: string;
+  private getApiKey?: () => string;
+  private onKeyFailure?: (key: string, status?: number) => void;
 
   constructor(options: GroqLlmClientOptions = {}) {
-    const key = options.apiKey || process.env.GROQ_API_KEY;
+    this.getApiKey = options.getApiKey;
+    this.onKeyFailure = options.onKeyFailure;
+    const key = options.apiKey || process.env.GROQ_API_KEY || (this.getApiKey ? this.getApiKey() : undefined);
     if (!key) {
       throw new Error("GROQ_API_KEY não definido. Informe via options.apiKey ou variável de ambiente.");
     }
@@ -98,7 +105,9 @@ Regras adicionais:
 
     const userPrompt = `Linhas extraídas do bilhete (podem ter apostas e outros textos):\n${contentLines}`;
 
-    const res = await fetch(GROQ_ENDPOINT, {
+    // Atualiza chave dinâmica se disponível
+    if (this.getApiKey) this.apiKey = this.getApiKey();
+    let res = await fetch(GROQ_ENDPOINT, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -115,8 +124,31 @@ Regras adicionais:
     });
 
     if (!res.ok) {
-      const text = await res.text().catch(() => "");
-      throw new Error(`Erro na chamada à API Groq: ${res.status} ${res.statusText} - ${text}`);
+      // Em caso de 429/401/403, tenta trocar de chave e refazer 1 vez
+      if ((res.status === 429 || res.status === 401 || res.status === 403) && this.getApiKey) {
+        const failedKey = this.apiKey;
+        if (this.onKeyFailure) this.onKeyFailure(failedKey, res.status);
+        this.apiKey = this.getApiKey();
+        res = await fetch(GROQ_ENDPOINT, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${this.apiKey}`,
+          },
+          body: JSON.stringify({
+            model: GROQ_MODEL,
+            temperature: 0.1,
+            messages: [
+              { role: "system", content: systemPrompt },
+              { role: "user", content: userPrompt },
+            ],
+          }),
+        });
+      }
+      if (!res.ok) {
+        const text = await res.text().catch(() => "");
+        throw new Error(`Erro na chamada à API Groq: ${res.status} ${res.statusText} - ${text}`);
+      }
     }
 
     const json: any = await res.json();
@@ -377,7 +409,9 @@ Regras gerais adicionais:
 Agora, aqui estão as linhas do bilhete (uma por linha):
 ${lines.join("\n")}`;
 
-    const res = await fetch(GROQ_ENDPOINT, {
+    // Atualiza chave dinâmica se disponível
+    if (this.getApiKey) this.apiKey = this.getApiKey();
+    let res = await fetch(GROQ_ENDPOINT, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -399,8 +433,36 @@ ${lines.join("\n")}`;
     });
 
     if (!res.ok) {
-      const text = await res.text().catch(() => "");
-      throw new Error(`Erro na chamada à API Groq (ticket): ${res.status} ${res.statusText} - ${text}`);
+      // Em caso de 429/401/403, tenta trocar de chave e refazer 1 vez
+      if ((res.status === 429 || res.status === 401 || res.status === 403) && this.getApiKey) {
+        const failedKey = this.apiKey;
+        if (this.onKeyFailure) this.onKeyFailure(failedKey, res.status);
+        this.apiKey = this.getApiKey();
+        res = await fetch(GROQ_ENDPOINT, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${this.apiKey}`,
+          },
+          body: JSON.stringify({
+            model: GROQ_MODEL,
+            temperature: 0.2,
+            response_format: { type: "json_object" },
+            messages: [
+              {
+                role: "system",
+                content:
+                  "Você analisa bilhetes de apostas esportivas a partir de texto OCR e responde apenas com JSON válido.",
+              },
+              { role: "user", content: prompt },
+            ],
+          }),
+        });
+      }
+      if (!res.ok) {
+        const text = await res.text().catch(() => "");
+        throw new Error(`Erro na chamada à API Groq (ticket): ${res.status} ${res.statusText} - ${text}`);
+      }
     }
 
     const json: any = await res.json();
@@ -470,5 +532,22 @@ ${lines.join("\n")}`;
 }
 
 export function createGroqLlmClient(options: GroqLlmClientOptions = {}): GroqLlmClient {
-  return new GroqLlmClient(options);
+  // Se já recebeu getApiKey/apiKey, apenas repassa
+  if (options.apiKey || options.getApiKey) {
+    return new GroqLlmClient(options);
+  }
+
+  // Lê múltiplas chaves do env (GROQ_API_KEYS ou GROQ_API_KEY)
+  const keys = readKeysFromEnv(process.env);
+  if (keys.length > 0) {
+    const rateLimitMs = Number(process.env.GROQ_RATE_LIMIT_COOLDOWN_MS || "") || undefined;
+    const rotator = new KeyRotator({ keys, rateLimitCooldownMs: rateLimitMs });
+    return new GroqLlmClient({
+      getApiKey: () => rotator.nextKey(),
+      onKeyFailure: (key, status) => rotator.recordFailure(key, status),
+    });
+  }
+
+  // Mantém comportamento anterior (vai lançar se não houver chave)
+  return new GroqLlmClient({});
 }
