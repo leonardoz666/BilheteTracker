@@ -115,52 +115,41 @@ Regras adicionais:
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
     try {
-      // Atualiza chave dinâmica se disponível
-      if (this.getApiKey) this.apiKey = this.getApiKey();
-      let res = await fetch(GROQ_ENDPOINT, {
-        signal: controller.signal as any,
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${this.apiKey}`,
-        },
-        body: JSON.stringify({
-          model: GROQ_MODEL,
-          temperature: 0.1,
-          messages: [
-            { role: "system", content: systemPrompt },
-            { role: "user", content: userPrompt },
-          ],
-        }),
-      });
+      let res: any;
+      const maxRetries = this.getApiKey ? 3 : 1;
 
-      if (!res.ok) {
-        // Em caso de 429/401/403, tenta trocar de chave e refazer 1 vez
-        if ((res.status === 429 || res.status === 401 || res.status === 403) && this.getApiKey) {
-          const failedKey = this.apiKey;
-          if (this.onKeyFailure) this.onKeyFailure(failedKey, res.status);
-          this.apiKey = this.getApiKey();
-          res = await fetch(GROQ_ENDPOINT, {
-            signal: controller.signal as any,
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${this.apiKey}`,
-            },
-            body: JSON.stringify({
-              model: GROQ_MODEL,
-              temperature: 0.1,
-              messages: [
-                { role: "system", content: systemPrompt },
-                { role: "user", content: userPrompt },
-              ],
-            }),
-          });
+      for (let i = 0; i < maxRetries; i++) {
+        // Atualiza chave dinâmica se disponível
+        if (this.getApiKey) this.apiKey = this.getApiKey();
+
+        res = await fetch(GROQ_ENDPOINT, {
+          signal: controller.signal as any,
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${this.apiKey}`,
+          },
+          body: JSON.stringify({
+            model: GROQ_MODEL,
+            temperature: 0.1,
+            messages: [
+              { role: "system", content: systemPrompt },
+              { role: "user", content: userPrompt },
+            ],
+          }),
+        });
+
+        if (res.ok) break;
+
+        // Se falhou com 429/401/403 e ainda tem tentativas, rotaciona e tenta novamente
+        if ([429, 401, 403].includes(res.status) && this.getApiKey && i < maxRetries - 1) {
+          if (this.onKeyFailure) this.onKeyFailure(this.apiKey, res.status);
+          continue;
         }
-        if (!res.ok) {
-          const text = await res.text().catch(() => "");
-          throw new Error(`Erro na chamada à API Groq: ${res.status} ${res.statusText} - ${text}`);
-        }
+
+        // Se erro fatal ou acabou tentativas
+        const text = await res.text().catch(() => "");
+        throw new Error(`Erro na chamada à API Groq: ${res.status} ${res.statusText} - ${text}`);
       }
 
       const json: any = await res.json();
@@ -440,62 +429,46 @@ ${lines.join("\n")}`;
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
     try {
-      // Atualiza chave dinâmica se disponível
-      if (this.getApiKey) this.apiKey = this.getApiKey();
-      let res = await fetch(GROQ_ENDPOINT, {
-        signal: controller.signal as any,
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${this.apiKey}`,
-        },
-        body: JSON.stringify({
-          model: GROQ_MODEL,
-          temperature: 0.2,
-          response_format: { type: "json_object" },
-          messages: [
-            {
-              role: "system",
-              content:
-                "Você analisa bilhetes de apostas esportivas a partir de texto OCR e responde apenas com JSON válido.",
-            },
-            { role: "user", content: prompt },
-          ],
-        }),
-      });
+      let res: any;
+      const maxRetries = this.getApiKey ? 3 : 1;
 
-      if (!res.ok) {
-        // Em caso de 429/401/403, tenta trocar de chave e refazer 1 vez
-        if ((res.status === 429 || res.status === 401 || res.status === 403) && this.getApiKey) {
-          const failedKey = this.apiKey;
-          if (this.onKeyFailure) this.onKeyFailure(failedKey, res.status);
-          this.apiKey = this.getApiKey();
-          res = await fetch(GROQ_ENDPOINT, {
-            signal: controller.signal as any,
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${this.apiKey}`,
-            },
-            body: JSON.stringify({
-              model: GROQ_MODEL,
-              temperature: 0.2,
-              response_format: { type: "json_object" },
-              messages: [
-                {
-                  role: "system",
-                  content:
-                    "Você analisa bilhetes de apostas esportivas a partir de texto OCR e responde apenas com JSON válido.",
-                },
-                { role: "user", content: prompt },
-              ],
-            }),
-          });
+      for (let i = 0; i < maxRetries; i++) {
+        // Atualiza chave dinâmica se disponível
+        if (this.getApiKey) this.apiKey = this.getApiKey();
+
+        res = await fetch(GROQ_ENDPOINT, {
+          signal: controller.signal as any,
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${this.apiKey}`,
+          },
+          body: JSON.stringify({
+            model: GROQ_MODEL,
+            temperature: 0.2,
+            response_format: { type: "json_object" },
+            messages: [
+              {
+                role: "system",
+                content:
+                  "Você analisa bilhetes de apostas esportivas a partir de texto OCR e responde apenas com JSON válido.",
+              },
+              { role: "user", content: prompt },
+            ],
+          }),
+        });
+
+        if (res.ok) break;
+
+        // Se falhou com 429/401/403 e ainda tem tentativas, rotaciona e tenta novamente
+        if ([429, 401, 403].includes(res.status) && this.getApiKey && i < maxRetries - 1) {
+          if (this.onKeyFailure) this.onKeyFailure(this.apiKey, res.status);
+          continue;
         }
-        if (!res.ok) {
-          const text = await res.text().catch(() => "");
-          throw new Error(`Erro na chamada à API Groq (ticket): ${res.status} ${res.statusText} - ${text}`);
-        }
+
+        // Se erro fatal ou acabou tentativas
+        const text = await res.text().catch(() => "");
+        throw new Error(`Erro na chamada à API Groq (ticket): ${res.status} ${res.statusText} - ${text}`);
       }
 
       const json: any = await res.json();

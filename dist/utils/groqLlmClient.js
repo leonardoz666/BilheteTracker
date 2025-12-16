@@ -102,53 +102,39 @@ Regras adicionais:
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), timeout);
         try {
-            // Atualiza chave dinâmica se disponível
-            if (this.getApiKey)
-                this.apiKey = this.getApiKey();
-            let res = await (0, node_fetch_1.default)(GROQ_ENDPOINT, {
-                signal: controller.signal,
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${this.apiKey}`,
-                },
-                body: JSON.stringify({
-                    model: GROQ_MODEL,
-                    temperature: 0.1,
-                    messages: [
-                        { role: "system", content: systemPrompt },
-                        { role: "user", content: userPrompt },
-                    ],
-                }),
-            });
-            if (!res.ok) {
-                // Em caso de 429/401/403, tenta trocar de chave e refazer 1 vez
-                if ((res.status === 429 || res.status === 401 || res.status === 403) && this.getApiKey) {
-                    const failedKey = this.apiKey;
-                    if (this.onKeyFailure)
-                        this.onKeyFailure(failedKey, res.status);
+            let res;
+            const maxRetries = this.getApiKey ? 3 : 1;
+            for (let i = 0; i < maxRetries; i++) {
+                // Atualiza chave dinâmica se disponível
+                if (this.getApiKey)
                     this.apiKey = this.getApiKey();
-                    res = await (0, node_fetch_1.default)(GROQ_ENDPOINT, {
-                        signal: controller.signal,
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${this.apiKey}`,
-                        },
-                        body: JSON.stringify({
-                            model: GROQ_MODEL,
-                            temperature: 0.1,
-                            messages: [
-                                { role: "system", content: systemPrompt },
-                                { role: "user", content: userPrompt },
-                            ],
-                        }),
-                    });
+                res = await (0, node_fetch_1.default)(GROQ_ENDPOINT, {
+                    signal: controller.signal,
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${this.apiKey}`,
+                    },
+                    body: JSON.stringify({
+                        model: GROQ_MODEL,
+                        temperature: 0.1,
+                        messages: [
+                            { role: "system", content: systemPrompt },
+                            { role: "user", content: userPrompt },
+                        ],
+                    }),
+                });
+                if (res.ok)
+                    break;
+                // Se falhou com 429/401/403 e ainda tem tentativas, rotaciona e tenta novamente
+                if ([429, 401, 403].includes(res.status) && this.getApiKey && i < maxRetries - 1) {
+                    if (this.onKeyFailure)
+                        this.onKeyFailure(this.apiKey, res.status);
+                    continue;
                 }
-                if (!res.ok) {
-                    const text = await res.text().catch(() => "");
-                    throw new Error(`Erro na chamada à API Groq: ${res.status} ${res.statusText} - ${text}`);
-                }
+                // Se erro fatal ou acabou tentativas
+                const text = await res.text().catch(() => "");
+                throw new Error(`Erro na chamada à API Groq: ${res.status} ${res.statusText} - ${text}`);
             }
             const json = await res.json();
             const content = json?.choices?.[0]?.message?.content;
@@ -425,61 +411,43 @@ ${lines.join("\n")}`;
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), timeout);
         try {
-            // Atualiza chave dinâmica se disponível
-            if (this.getApiKey)
-                this.apiKey = this.getApiKey();
-            let res = await (0, node_fetch_1.default)(GROQ_ENDPOINT, {
-                signal: controller.signal,
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${this.apiKey}`,
-                },
-                body: JSON.stringify({
-                    model: GROQ_MODEL,
-                    temperature: 0.2,
-                    response_format: { type: "json_object" },
-                    messages: [
-                        {
-                            role: "system",
-                            content: "Você analisa bilhetes de apostas esportivas a partir de texto OCR e responde apenas com JSON válido.",
-                        },
-                        { role: "user", content: prompt },
-                    ],
-                }),
-            });
-            if (!res.ok) {
-                // Em caso de 429/401/403, tenta trocar de chave e refazer 1 vez
-                if ((res.status === 429 || res.status === 401 || res.status === 403) && this.getApiKey) {
-                    const failedKey = this.apiKey;
-                    if (this.onKeyFailure)
-                        this.onKeyFailure(failedKey, res.status);
+            let res;
+            const maxRetries = this.getApiKey ? 3 : 1;
+            for (let i = 0; i < maxRetries; i++) {
+                // Atualiza chave dinâmica se disponível
+                if (this.getApiKey)
                     this.apiKey = this.getApiKey();
-                    res = await (0, node_fetch_1.default)(GROQ_ENDPOINT, {
-                        signal: controller.signal,
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${this.apiKey}`,
-                        },
-                        body: JSON.stringify({
-                            model: GROQ_MODEL,
-                            temperature: 0.2,
-                            response_format: { type: "json_object" },
-                            messages: [
-                                {
-                                    role: "system",
-                                    content: "Você analisa bilhetes de apostas esportivas a partir de texto OCR e responde apenas com JSON válido.",
-                                },
-                                { role: "user", content: prompt },
-                            ],
-                        }),
-                    });
+                res = await (0, node_fetch_1.default)(GROQ_ENDPOINT, {
+                    signal: controller.signal,
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${this.apiKey}`,
+                    },
+                    body: JSON.stringify({
+                        model: GROQ_MODEL,
+                        temperature: 0.2,
+                        response_format: { type: "json_object" },
+                        messages: [
+                            {
+                                role: "system",
+                                content: "Você analisa bilhetes de apostas esportivas a partir de texto OCR e responde apenas com JSON válido.",
+                            },
+                            { role: "user", content: prompt },
+                        ],
+                    }),
+                });
+                if (res.ok)
+                    break;
+                // Se falhou com 429/401/403 e ainda tem tentativas, rotaciona e tenta novamente
+                if ([429, 401, 403].includes(res.status) && this.getApiKey && i < maxRetries - 1) {
+                    if (this.onKeyFailure)
+                        this.onKeyFailure(this.apiKey, res.status);
+                    continue;
                 }
-                if (!res.ok) {
-                    const text = await res.text().catch(() => "");
-                    throw new Error(`Erro na chamada à API Groq (ticket): ${res.status} ${res.statusText} - ${text}`);
-                }
+                // Se erro fatal ou acabou tentativas
+                const text = await res.text().catch(() => "");
+                throw new Error(`Erro na chamada à API Groq (ticket): ${res.status} ${res.statusText} - ${text}`);
             }
             const json = await res.json();
             const content = json?.choices?.[0]?.message?.content;
