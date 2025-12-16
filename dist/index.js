@@ -39,10 +39,10 @@ Object.defineProperty(exports, "processBilheteWithClient", { enumerable: true, g
 __exportStar(require("./schema/bilhete.schema"), exports);
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 /**
- * Calcula o delay com backoff exponencial: 200ms → 400ms → 600ms
+ * Calcula o delay com backoff: 2000ms → 4000ms
  */
 function getBackoffDelay(attempt) {
-    const backoffMs = [200, 400, 600];
+    const backoffMs = [2000, 4000];
     return backoffMs[Math.min(attempt - 1, backoffMs.length - 1)];
 }
 async function callOcrWithRetry(imageUrl, maxRetries = 3) {

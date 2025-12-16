@@ -30,10 +30,10 @@ export type ProcessFromImageOptions = {
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /**
- * Calcula o delay com backoff exponencial: 200ms → 400ms → 600ms
+ * Calcula o delay com backoff: 2000ms → 4000ms
  */
 function getBackoffDelay(attempt: number): number {
-  const backoffMs = [200, 400, 600];
+  const backoffMs = [2000, 4000];
   return backoffMs[Math.min(attempt - 1, backoffMs.length - 1)];
 }
 
@@ -203,17 +203,17 @@ function createHttpServer() {
 
     try {
       console.log(`[HTTP] POST /api/process-image - Parser v${PARSER_VERSION}`);
-      const ticket = await processBilheteFromImageUrl(imageUrl, { 
+      const ticket = await processBilheteFromImageUrl(imageUrl, {
         useMockLlm: effectiveUseMockLlm,
-        bypassCache: bypassCache === true 
+        bypassCache: bypassCache === true
       });
-      
+
       // 🔍 DEBUG: Log do bilhete antes de retornar
       console.log('🔍 [BILHETE-TRACKER] Retornando bilhete:');
       console.log('   Esporte:', ticket.esporte);
       console.log('   Evento:', ticket.evento);
       console.log('   Torneio:', ticket.torneio);
-      
+
       return res.json(ticket);
     } catch (err) {
       console.error("Erro ao processar bilhete via HTTP:", err);
