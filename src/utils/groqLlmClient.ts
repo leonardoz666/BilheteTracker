@@ -80,6 +80,11 @@ Regras semânticas importantes:
   da linha, interprete isso como abreviação do time e preencha o campo
   "timeAbrev" com esse valor, sem tratá-lo como período.
 
+- 🎯 Regra para TEAM PROPS (Apostas de Time):
+  Se a linha começar com o nome de um time (ou abreviação) seguido de uma estatística,
+  Trate como "team_prop" e EXTRAIA o nome para o campo "time".
+  Exemplo: "Chelsea - Mais de 0.5 cartões" -> tipo: "team_prop", time: "Chelsea", estatistica: "Cartões", condicao: "Mais de 0.5"
+
 Regras específicas para apostas de vencedor (winner/moneyline):
 - Se uma linha começar com prefixos como:
   * "Vencedor - TIME"
@@ -252,6 +257,12 @@ Instruções de interpretação das apostas (INTENÇÃO):
   qualquer sequência de 2 a 4 letras maiúsculas entre parênteses NO FIM
   da linha, interprete isso como abreviação do time e preencha o campo
   "timeAbrev" com esse valor, sem tratá-lo como período.
+
+- 🎯 Regra para TEAM PROPS (Apostas de Time):
+  Se a linha começar com o nome de um time (ou abreviação) seguido de uma estatística,
+  Trate como "team_prop" e EXTRAIA o nome para o campo "time".
+  Exemplo: "Chelsea - Mais de 0.5 cartões" -> tipo: "team_prop", time: "Chelsea", estatistica: "Cartões", condicao: "Mais de 0.5"
+  Exemplo: "Flamengo - Escanteios Mais de 5.5" -> tipo: "team_prop", time: "Flamengo", estatistica: "Escanteios", condicao: "Mais de 5.5"
 
 Instruções adicionais para apostas de vencedor (winner/moneyline):
 - Se uma linha começar com prefixos como:
@@ -488,68 +499,68 @@ ${lines.join("\n")}`;
       }
 
       const json: any = await res.json();
-    const content = json?.choices?.[0]?.message?.content;
+      const content = json?.choices?.[0]?.message?.content;
 
-    if (typeof content !== "string") {
-      return {
-        esporte: null,
-        torneio: null,
-        evento: null,
-        valorApostado: null,
-        odd: null,
-        retornoPotencial: null,
-        tipo: null,
-        data: null,
-        bonus: null,
-        aposta: "",
-        mercado: "",
-        apostasDetalhadas: [],
-      };
-    }
+      if (typeof content !== "string") {
+        return {
+          esporte: null,
+          torneio: null,
+          evento: null,
+          valorApostado: null,
+          odd: null,
+          retornoPotencial: null,
+          tipo: null,
+          data: null,
+          bonus: null,
+          aposta: "",
+          mercado: "",
+          apostasDetalhadas: [],
+        };
+      }
 
-    try {
-      const parsed = JSON.parse(content) as BilheteFinal;
-      // Garantir que confianca sempre tenha um valor válido em apostasDetalhadas
-      const apostasComFallback = (Array.isArray(parsed.apostasDetalhadas)
-        ? parsed.apostasDetalhadas
-        : []
-      ).map((a: any) => ({
-        ...a,
-        confianca: a.confianca && ["alta", "media", "baixa"].includes(a.confianca)
-          ? a.confianca
-          : "media",
-      }));
-      
-      return {
-        esporte: parsed.esporte ?? null,
-        torneio: parsed.torneio ?? null,
-        evento: parsed.evento ?? null,
-        valorApostado: parsed.valorApostado ?? null,
-        odd: parsed.odd ?? null,
-        retornoPotencial: parsed.retornoPotencial ?? null,
-        tipo: parsed.tipo ?? null,
-        data: parsed.data ?? null,
-        bonus: parsed.bonus ?? null,
-        aposta: parsed.aposta ?? "",
-        mercado: parsed.mercado ?? "",
-        apostasDetalhadas: apostasComFallback,
-      };
-    } catch (parseErr) {
-      return {
-        esporte: null,
-        torneio: null,
-        evento: null,
-        valorApostado: null,
-        odd: null,
-        retornoPotencial: null,
-        tipo: null,
-        data: null,
-        bonus: null,
-        aposta: "",
-        mercado: "",
-        apostasDetalhadas: [],
-      };
-    }
+      try {
+        const parsed = JSON.parse(content) as BilheteFinal;
+        // Garantir que confianca sempre tenha um valor válido em apostasDetalhadas
+        const apostasComFallback = (Array.isArray(parsed.apostasDetalhadas)
+          ? parsed.apostasDetalhadas
+          : []
+        ).map((a: any) => ({
+          ...a,
+          confianca: a.confianca && ["alta", "media", "baixa"].includes(a.confianca)
+            ? a.confianca
+            : "media",
+        }));
+
+        return {
+          esporte: parsed.esporte ?? null,
+          torneio: parsed.torneio ?? null,
+          evento: parsed.evento ?? null,
+          valorApostado: parsed.valorApostado ?? null,
+          odd: parsed.odd ?? null,
+          retornoPotencial: parsed.retornoPotencial ?? null,
+          tipo: parsed.tipo ?? null,
+          data: parsed.data ?? null,
+          bonus: parsed.bonus ?? null,
+          aposta: parsed.aposta ?? "",
+          mercado: parsed.mercado ?? "",
+          apostasDetalhadas: apostasComFallback,
+        };
+      } catch (parseErr) {
+        return {
+          esporte: null,
+          torneio: null,
+          evento: null,
+          valorApostado: null,
+          odd: null,
+          retornoPotencial: null,
+          tipo: null,
+          data: null,
+          bonus: null,
+          aposta: "",
+          mercado: "",
+          apostasDetalhadas: [],
+        };
+      }
     } catch (err: any) {
       if (err.name === 'AbortError') {
         throw new Error(`Timeout (${timeout}ms) ao chamar Groq API (ticket)`);

@@ -179,11 +179,11 @@ export class MockLlmClient implements TicketLlmClient {
   // Mock do callTicketParser: parseia linhas conhecidas, deixa o rest pra fallback
   async callTicketParser(lines: string[]): Promise<any> {
     const apostas: any[] = [];
-    
+
     for (const line of lines) {
       const trimmed = line.trim();
       if (!trimmed) continue;
-      
+
       // Padrão: "JOGADOR - ESTATÍSTICA CONDIÇÃO" (ex: "Josh Allen - Recepções Mais de 3.5")
       // Precisa vir ANTES dos outros padrões
       const playerStatMatch = trimmed.match(/^([A-Z][a-zA-ZÀ-ú\s]+?)\s*-\s*(Recepções?|Touchdowns?|Yards?|Sacks?|Fumbles?|Pontos|Rebotes|Assistências|Cestas|Finaliza[çc][õo]es|Chutes?|Passes?|Gols?)(?:\s+(Mais de|Menos de|Over|Under)\s+(\d+(?:[.,]\d+)?))?/i);
@@ -203,13 +203,13 @@ export class MockLlmClient implements TicketLlmClient {
         });
         continue;
       }
-      
+
       // Padrão: "PERÍODO - Cada time bate X+ escanteios"
       const cadaTimeMatch = trimmed.match(/^(?:(1º|2º|3º|4º)\s*(Quarto|Tempo)|HT|FT)?\s*-?\s*Cada\s+time\s+bate\s+(\d+)\+?\s*(\w+)/i);
       if (cadaTimeMatch) {
         const [, numero, periodoTipo, valor, estatistica] = cadaTimeMatch;
         let periodo = 'Jogo';
-        
+
         if (numero && periodoTipo) {
           periodo = `${numero} ${periodoTipo}`;
         } else if (trimmed.toLowerCase().startsWith('ht')) {
@@ -217,7 +217,7 @@ export class MockLlmClient implements TicketLlmClient {
         } else if (trimmed.toLowerCase().startsWith('ft')) {
           periodo = 'Jogo';
         }
-        
+
         apostas.push({
           tipo: 'match_prop',
           jogador: null,
@@ -231,7 +231,7 @@ export class MockLlmClient implements TicketLlmClient {
         });
         continue;
       }
-      
+
       // Padrão: "JOGADOR (TIME) - AÇÃO" (ex: "Francisco Conceição (JUV) - Chutar a Gol")
       const playerActionMatch = trimmed.match(/^([A-Z][a-zA-ZÀ-ú\s]+)\s*\(([A-Z]{2,4})\)\s*-\s*([A-Za-zÀ-ú\s]+)$/);
       if (playerActionMatch) {
@@ -249,7 +249,7 @@ export class MockLlmClient implements TicketLlmClient {
         });
         continue;
       }
-      
+
       // Padrão: "Total de Gols Mais/Menos: Mais de 3.5" (formato com dois pontos)
       const totalGolsMaisMenosMatch = trimmed.match(/^Total\s+de\s+Gols?\s+Mais\/Menos:\s*(Mais de|Menos de|Over|Under)\s+([\d.,]+)/i);
       if (totalGolsMaisMenosMatch) {
@@ -267,7 +267,7 @@ export class MockLlmClient implements TicketLlmClient {
         });
         continue;
       }
-      
+
       // Padrão: "Total (de) Gols - Mais de X" (match_prop, não player_prop!)
       const totalGolsMatch = trimmed.match(/^Total\s+(?:de\s+)?Gols?\s*-\s*(Mais de|Menos de|Over|Under)\s+([\d.,]+)/i);
       if (totalGolsMatch) {
@@ -285,7 +285,7 @@ export class MockLlmClient implements TicketLlmClient {
         });
         continue;
       }
-      
+
       // Padrão: "Vencedor ... Tempo - TIME"
       const vencedorMatch = trimmed.match(/^Vencedor\s+(?:do\s+)?([^-]+)\s*-\s*(.+)$/i);
       if (vencedorMatch) {
@@ -302,8 +302,28 @@ export class MockLlmClient implements TicketLlmClient {
         });
         continue;
       }
+
+      // Padrão: "TIME - ESTATÍSTICA (Mais de/Menos de X)" (Team Prop)
+      // Ex: "Chelsea - Mais de 5.5 escanteios"
+      // Ex: "Chelsea - Receber mais de 0.5 cartões"
+      const teamPropMatch = trimmed.match(/^([A-Z][a-zA-Z0-9\s]+?)\s*-\s*((?:Receber\s+)?(?:Mais de|Menos de|Over|Under))\s+(\d+(?:[.,]\d+)?)\s*([a-zA-Z\u00C0-\u00FF\s]+)/i);
+      if (teamPropMatch) {
+        const [, time, operador, valor, estatistica] = teamPropMatch;
+        apostas.push({
+          tipo: 'team_prop',
+          jogador: null,
+          estatistica: estatistica.trim(),
+          condicao: `${operador.trim()} ${valor}`,
+          valor: parseFloat(valor.replace(',', '.')),
+          time: time.trim(),
+          timeAbrev: null,
+          periodo: 'Jogo',
+          confianca: 'alta',
+        });
+        continue;
+      }
     }
-    
+
     // Retorna apostas parseadas
     return {
       esporte: null,
@@ -329,12 +349,12 @@ function maskKey(key: string): string {
 // Em produção, usa GroqClient se GROQ_API_KEY disponível, senão fallback para MockLlmClient.
 export const defaultLlmClient: TicketLlmClient = (() => {
   const isTestEnvironment = process.env.NODE_ENV === "test" || process.env.JEST_WORKER_ID !== undefined;
-  
+
   if (isTestEnvironment) {
     console.log("⚠️ Ambiente de teste detectado. Usando MockLlmClient");
     return new MockLlmClient();
   }
-  
+
   const keys = readKeysFromEnv(process.env);
   if (keys.length > 0) {
     const rateLimitMs = Number(process.env.GROQ_RATE_LIMIT_COOLDOWN_MS || "") || undefined;
