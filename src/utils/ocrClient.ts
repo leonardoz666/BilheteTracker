@@ -27,46 +27,64 @@ export async function callOcrSpaceByUrl(
   }
 
   const language = options.language || "por";
+  const timeout = 10000; // 10s timeout
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
 
-  // 1) Baixar a imagem real a partir da URL (ex.: arquivo do Telegram).
-  const imageRes = await fetch(imageUrl);
-  if (!imageRes.ok) {
-    const text = await imageRes.text().catch(() => "");
-    throw new Error(
-      `Falha ao baixar imagem para OCR (${imageRes.status} ${imageRes.statusText}): ${text}`,
-    );
+  try {
+    // 1) Baixar a imagem real a partir da URL (ex.: arquivo do Telegram).
+    const imageRes = await fetch(imageUrl, { signal: controller.signal as any });
+    if (!imageRes.ok) {
+      const text = await imageRes.text().catch(() => "");
+      throw new Error(
+        `Falha ao baixar imagem para OCR (${imageRes.status} ${imageRes.statusText}): ${text}`,
+      );
+    }
+
+    const buffer = await imageRes.buffer();
+    clearTimeout(timeoutId);
+
+    // Tentar inferir nome e tipo de arquivo para o upload.
+    const contentType = imageRes.headers.get("content-type") || "image/jpeg";
+    const urlPath = new URL(imageUrl).pathname;
+    const filenameFromUrl = urlPath.split("/").filter(Boolean).pop() || "upload.jpg";
+
+    const form = new FormData();
+    form.append("apikey", apiKey);
+    form.append("language", language);
+    form.append("OCREngine", "2");
+    form.append("scale", "true");
+    form.append("isTable", "false");
+    form.append("file", buffer, {
+      filename: filenameFromUrl,
+      contentType,
+    });
+
+    const ocrController = new AbortController();
+    const ocrTimeoutId = setTimeout(() => ocrController.abort(), timeout);
+
+    const res = await fetch(OCR_SPACE_ENDPOINT, {
+      method: "POST",
+      body: form as any,
+      // form-data define os headers corretos de multipart, incluindo boundary.
+      headers: form.getHeaders(),
+      signal: ocrController.signal as any,
+    });
+    clearTimeout(ocrTimeoutId);
+
+    if (!res.ok) {
+      const text = await res.text().catch(() => "");
+      throw new Error(`Falha na chamada ao OCR.space: ${res.status} ${res.statusText} - ${text}`);
+    }
+
+    const data = (await res.json()) as OcrSpaceResponse;
+    return data;
+  } catch (err: any) {
+    if (err.name === 'AbortError') {
+      throw new Error(`Timeout (${timeout}ms) ao chamar OCR.space`);
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeoutId);
   }
-
-  const buffer = await imageRes.buffer();
-
-  // Tentar inferir nome e tipo de arquivo para o upload.
-  const contentType = imageRes.headers.get("content-type") || "image/jpeg";
-  const urlPath = new URL(imageUrl).pathname;
-  const filenameFromUrl = urlPath.split("/").filter(Boolean).pop() || "upload.jpg";
-
-  const form = new FormData();
-  form.append("apikey", apiKey);
-  form.append("language", language);
-  form.append("OCREngine", "2");
-  form.append("scale", "true");
-  form.append("isTable", "false");
-  form.append("file", buffer, {
-    filename: filenameFromUrl,
-    contentType,
-  });
-
-  const res = await fetch(OCR_SPACE_ENDPOINT, {
-    method: "POST",
-    body: form as any,
-    // form-data define os headers corretos de multipart, incluindo boundary.
-    headers: form.getHeaders(),
-  });
-
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(`Falha na chamada ao OCR.space: ${res.status} ${res.statusText} - ${text}`);
-  }
-
-  const data = (await res.json()) as OcrSpaceResponse;
-  return data;
 }

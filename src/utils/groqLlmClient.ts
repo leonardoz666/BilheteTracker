@@ -105,75 +105,90 @@ Regras adicionais:
 
     const userPrompt = `Linhas extraídas do bilhete (podem ter apostas e outros textos):\n${contentLines}`;
 
-    // Atualiza chave dinâmica se disponível
-    if (this.getApiKey) this.apiKey = this.getApiKey();
-    let res = await fetch(GROQ_ENDPOINT, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${this.apiKey}`,
-      },
-      body: JSON.stringify({
-        model: GROQ_MODEL,
-        temperature: 0.1,
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt },
-        ],
-      }),
-    });
-
-    if (!res.ok) {
-      // Em caso de 429/401/403, tenta trocar de chave e refazer 1 vez
-      if ((res.status === 429 || res.status === 401 || res.status === 403) && this.getApiKey) {
-        const failedKey = this.apiKey;
-        if (this.onKeyFailure) this.onKeyFailure(failedKey, res.status);
-        this.apiKey = this.getApiKey();
-        res = await fetch(GROQ_ENDPOINT, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${this.apiKey}`,
-          },
-          body: JSON.stringify({
-            model: GROQ_MODEL,
-            temperature: 0.1,
-            messages: [
-              { role: "system", content: systemPrompt },
-              { role: "user", content: userPrompt },
-            ],
-          }),
-        });
-      }
-      if (!res.ok) {
-        const text = await res.text().catch(() => "");
-        throw new Error(`Erro na chamada à API Groq: ${res.status} ${res.statusText} - ${text}`);
-      }
-    }
-
-    const json: any = await res.json();
-    const content = json?.choices?.[0]?.message?.content;
-
-    if (typeof content !== "string") {
-      return { apostas: [] };
-    }
+    const timeout = 30000; // 30s timeout para LLM
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
 
     try {
-      const parsed = JSON.parse(content) as ResultadoSemanticoLLM;
-      if (!parsed || !Array.isArray(parsed.apostas)) {
+      // Atualiza chave dinâmica se disponível
+      if (this.getApiKey) this.apiKey = this.getApiKey();
+      let res = await fetch(GROQ_ENDPOINT, {
+        signal: controller.signal as any,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.apiKey}`,
+        },
+        body: JSON.stringify({
+          model: GROQ_MODEL,
+          temperature: 0.1,
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userPrompt },
+          ],
+        }),
+      });
+
+      if (!res.ok) {
+        // Em caso de 429/401/403, tenta trocar de chave e refazer 1 vez
+        if ((res.status === 429 || res.status === 401 || res.status === 403) && this.getApiKey) {
+          const failedKey = this.apiKey;
+          if (this.onKeyFailure) this.onKeyFailure(failedKey, res.status);
+          this.apiKey = this.getApiKey();
+          res = await fetch(GROQ_ENDPOINT, {
+            signal: controller.signal as any,
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${this.apiKey}`,
+            },
+            body: JSON.stringify({
+              model: GROQ_MODEL,
+              temperature: 0.1,
+              messages: [
+                { role: "system", content: systemPrompt },
+                { role: "user", content: userPrompt },
+              ],
+            }),
+          });
+        }
+        if (!res.ok) {
+          const text = await res.text().catch(() => "");
+          throw new Error(`Erro na chamada à API Groq: ${res.status} ${res.statusText} - ${text}`);
+        }
+      }
+
+      const json: any = await res.json();
+      const content = json?.choices?.[0]?.message?.content;
+
+      if (typeof content !== "string") {
         return { apostas: [] };
       }
-      // Garantir que confianca sempre tenha um valor válido (fallback para "media")
-      const apostasComFallback = parsed.apostas.map((a: any) => ({
-        ...a,
-        confianca: a.confianca && ["alta", "media", "baixa"].includes(a.confianca)
-          ? a.confianca
-          : "media",
-      }));
-      return { apostas: apostasComFallback };
-    } catch {
-      // Se a IA não respeitar o formato, voltamos com lista vazia
-      return { apostas: [] };
+
+      try {
+        const parsed = JSON.parse(content) as ResultadoSemanticoLLM;
+        if (!parsed || !Array.isArray(parsed.apostas)) {
+          return { apostas: [] };
+        }
+        // Garantir que confianca sempre tenha um valor válido (fallback para "media")
+        const apostasComFallback = parsed.apostas.map((a: any) => ({
+          ...a,
+          confianca: a.confianca && ["alta", "media", "baixa"].includes(a.confianca)
+            ? a.confianca
+            : "media",
+        }));
+        return { apostas: apostasComFallback };
+      } catch (parseErr) {
+        // Se a IA não respeitar o formato, voltamos com lista vazia
+        return { apostas: [] };
+      }
+    } catch (err: any) {
+      if (err.name === 'AbortError') {
+        throw new Error(`Timeout (${timeout}ms) ao chamar Groq API`);
+      }
+      throw err;
+    } finally {
+      clearTimeout(timeoutId);
     }
   }
 
@@ -409,63 +424,70 @@ Regras gerais adicionais:
 Agora, aqui estão as linhas do bilhete (uma por linha):
 ${lines.join("\n")}`;
 
-    // Atualiza chave dinâmica se disponível
-    if (this.getApiKey) this.apiKey = this.getApiKey();
-    let res = await fetch(GROQ_ENDPOINT, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${this.apiKey}`,
-      },
-      body: JSON.stringify({
-        model: GROQ_MODEL,
-        temperature: 0.2,
-        response_format: { type: "json_object" },
-        messages: [
-          {
-            role: "system",
-            content:
-              "Você analisa bilhetes de apostas esportivas a partir de texto OCR e responde apenas com JSON válido.",
-          },
-          { role: "user", content: prompt },
-        ],
-      }),
-    });
+    const timeout = 30000; // 30s timeout para LLM
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
 
-    if (!res.ok) {
-      // Em caso de 429/401/403, tenta trocar de chave e refazer 1 vez
-      if ((res.status === 429 || res.status === 401 || res.status === 403) && this.getApiKey) {
-        const failedKey = this.apiKey;
-        if (this.onKeyFailure) this.onKeyFailure(failedKey, res.status);
-        this.apiKey = this.getApiKey();
-        res = await fetch(GROQ_ENDPOINT, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${this.apiKey}`,
-          },
-          body: JSON.stringify({
-            model: GROQ_MODEL,
-            temperature: 0.2,
-            response_format: { type: "json_object" },
-            messages: [
-              {
-                role: "system",
-                content:
-                  "Você analisa bilhetes de apostas esportivas a partir de texto OCR e responde apenas com JSON válido.",
-              },
-              { role: "user", content: prompt },
-            ],
-          }),
-        });
-      }
+    try {
+      // Atualiza chave dinâmica se disponível
+      if (this.getApiKey) this.apiKey = this.getApiKey();
+      let res = await fetch(GROQ_ENDPOINT, {
+        signal: controller.signal as any,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.apiKey}`,
+        },
+        body: JSON.stringify({
+          model: GROQ_MODEL,
+          temperature: 0.2,
+          response_format: { type: "json_object" },
+          messages: [
+            {
+              role: "system",
+              content:
+                "Você analisa bilhetes de apostas esportivas a partir de texto OCR e responde apenas com JSON válido.",
+            },
+            { role: "user", content: prompt },
+          ],
+        }),
+      });
+
       if (!res.ok) {
-        const text = await res.text().catch(() => "");
-        throw new Error(`Erro na chamada à API Groq (ticket): ${res.status} ${res.statusText} - ${text}`);
+        // Em caso de 429/401/403, tenta trocar de chave e refazer 1 vez
+        if ((res.status === 429 || res.status === 401 || res.status === 403) && this.getApiKey) {
+          const failedKey = this.apiKey;
+          if (this.onKeyFailure) this.onKeyFailure(failedKey, res.status);
+          this.apiKey = this.getApiKey();
+          res = await fetch(GROQ_ENDPOINT, {
+            signal: controller.signal as any,
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${this.apiKey}`,
+            },
+            body: JSON.stringify({
+              model: GROQ_MODEL,
+              temperature: 0.2,
+              response_format: { type: "json_object" },
+              messages: [
+                {
+                  role: "system",
+                  content:
+                    "Você analisa bilhetes de apostas esportivas a partir de texto OCR e responde apenas com JSON válido.",
+                },
+                { role: "user", content: prompt },
+              ],
+            }),
+          });
+        }
+        if (!res.ok) {
+          const text = await res.text().catch(() => "");
+          throw new Error(`Erro na chamada à API Groq (ticket): ${res.status} ${res.statusText} - ${text}`);
+        }
       }
-    }
 
-    const json: any = await res.json();
+      const json: any = await res.json();
     const content = json?.choices?.[0]?.message?.content;
 
     if (typeof content !== "string") {
@@ -512,7 +534,7 @@ ${lines.join("\n")}`;
         mercado: parsed.mercado ?? "",
         apostasDetalhadas: apostasComFallback,
       };
-    } catch {
+    } catch (parseErr) {
       return {
         esporte: null,
         torneio: null,
@@ -527,6 +549,14 @@ ${lines.join("\n")}`;
         mercado: "",
         apostasDetalhadas: [],
       };
+    }
+    } catch (err: any) {
+      if (err.name === 'AbortError') {
+        throw new Error(`Timeout (${timeout}ms) ao chamar Groq API (ticket)`);
+      }
+      throw err;
+    } finally {
+      clearTimeout(timeoutId);
     }
   }
 }

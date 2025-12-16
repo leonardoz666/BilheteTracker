@@ -1,4 +1,4 @@
-// Cache de tickets por hash de imagem (MD5) com TTL de 1 hora
+// Cache de tickets por hash de imagem (MD5) com TTL de 1 hora e LRU eviction
 // Reduz processamento redundante de imagens duplicadas
 // Chave de cache: ticket:{parserVersion}:{imageHash}
 
@@ -18,11 +18,16 @@ export class TicketCache {
   private cache = new Map<string, CacheEntry<BilheteFinal>>();
   private readonly ttlMs: number;
   private readonly parserVersion: string;
+  private readonly maxSize: number;
 
-  constructor(ttlMs: number = 1 * 60 * 60 * 1000, parserVersion: string = PARSER_VERSION) {
-    // Default: 1 hora
+  constructor(
+    ttlMs: number = 1 * 60 * 60 * 1000, 
+    parserVersion: string = PARSER_VERSION,
+    maxSize: number = 100 // Máximo de 100 tickets em cache
+  ) {
     this.ttlMs = ttlMs;
     this.parserVersion = parserVersion;
+    this.maxSize = maxSize;
   }
 
   /**
@@ -42,15 +47,32 @@ export class TicketCache {
 
   /**
    * Armazena um ticket no cache com a chave (parserVersion + imageHash)
+   * Implementa LRU: se o cache está cheio, remove a entrada mais antiga
    */
   set(imageHash: string, ticket: BilheteFinal): void {
     const key = this.generateCacheKey(imageHash);
     const expiresAt = Date.now() + this.ttlMs;
+    
+    // Se a chave já existe, delete primeiro para reordenar (LRU)
+    if (this.cache.has(key)) {
+      this.cache.delete(key);
+    }
+    
+    // Se o cache atingiu o limite, remove a entrada mais antiga (primeira do Map)
+    if (this.cache.size >= this.maxSize) {
+      const firstKey = this.cache.keys().next().value;
+      if (firstKey) {
+        this.cache.delete(firstKey);
+      }
+    }
+    
+    // Adiciona a nova entrada (vai para o final do Map)
     this.cache.set(key, { data: ticket, expiresAt });
   }
 
   /**
    * Recupera um ticket do cache se existir e não estiver expirado
+   * Implementa LRU: move a entrada acessada para o final (marca como recente)
    */
   get(imageHash: string): BilheteFinal | null {
     const key = this.generateCacheKey(imageHash);
@@ -64,6 +86,10 @@ export class TicketCache {
       this.cache.delete(key);
       return null;
     }
+
+    // Move para o final do Map (marca como recentemente usado)
+    this.cache.delete(key);
+    this.cache.set(key, entry);
 
     return entry.data;
   }
@@ -105,7 +131,16 @@ export class TicketCache {
   size(): number {
     return this.cache.size;
   }
+
+  /**
+   * Retorna estatísticas do cache
+   */
+  stats(): { size: number; maxSize: number; utilizacao: string } {
+    const size = this.cache.size;
+    const utilizacao = ((size / this.maxSize) * 100).toFixed(1);
+    return { size, maxSize: this.maxSize, utilizacao: `${utilizacao}%` };
+  }
 }
 
-// Instância global do cache com TTL de 1 hora
-export const globalTicketCache = new TicketCache(1 * 60 * 60 * 1000);
+// Instância global do cache com TTL de 1 hora e limite de 100 entradas
+export const globalTicketCache = new TicketCache(1 * 60 * 60 * 1000, PARSER_VERSION, 100);
