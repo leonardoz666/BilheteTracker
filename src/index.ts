@@ -152,9 +152,10 @@ export async function processBilheteFromImageUrl(
   }
 
   // Armazena o resultado no cache se hash foi gerado
+  // Chave de cache: ticket:{parserVersion}:{imageHash}
   if (shouldUseCache && imageHash) {
     globalTicketCache.set(imageHash, result);
-    console.log(`💾 [CACHE STORE] Bilhete armazenado no cache com hash ${imageHash.substring(0, 8)}...`);
+    console.log(`💾 [CACHE STORE v${PARSER_VERSION}] Chave: ticket:${PARSER_VERSION}:${imageHash.substring(0, 8)}... armazenado com TTL 1h`);
   }
 
   return result;
@@ -184,7 +185,7 @@ function createHttpServer() {
   app.use(express.json({ limit: "10mb" }));
 
   app.get("/health", (_req, res) => {
-    res.json({ status: "ok" });
+    res.json({ status: "ok", parserVersion: PARSER_VERSION });
   });
 
   app.post("/api/process-image", async (req, res) => {
@@ -198,6 +199,7 @@ function createHttpServer() {
     }
 
     try {
+      console.log(`[HTTP] POST /api/process-image - Parser v${PARSER_VERSION}`);
       const ticket = await processBilheteFromImageUrl(imageUrl, { 
         useMockLlm: effectiveUseMockLlm,
         bypassCache: bypassCache === true 
