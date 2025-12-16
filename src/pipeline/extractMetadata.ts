@@ -91,6 +91,9 @@ const FOOTBALL_KEYWORDS = [
   /\bfalta?s?\b/i,
   /\bimpedimentos?\b/i,
   /\bpenalt[yi]s?\b/i,
+  /\bambas\s+marcam\b/i,
+  /\bboth\s+teams\s+to\s+score\b/i,
+  /\bbtts\b/i,
 ] as const;
 
 function hasFootballKeywords(lines: string[]): boolean {
@@ -99,7 +102,38 @@ function hasFootballKeywords(lines: string[]): boolean {
 }
 
 function extractEsporte(lines: string[]): { esporte: string | null; consumedIdx: number | null } {
-  // Scoring por liga: mais específico primeiro (NBA > NFL > MLB) e requer pelo menos um hit forte
+  // PRIORIDADE 1: Detectar futebol primeiro quando há keywords fortes
+  // Isso evita que aliases fracos de outras ligas interfiram
+  const hasFootballContext = hasFootballKeywords(lines);
+  
+  if (hasFootballContext) {
+    // Busca times de futebol quando há contexto claro de futebol
+    let footballTeamFound = false;
+    let footballLineIdx: number | null = null;
+    
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const words = line.split(/\s+/);
+      for (const word of words) {
+        if (normalizeFootballClub(word)) {
+          footballTeamFound = true;
+          if (footballLineIdx === null) footballLineIdx = i;
+          break;
+        }
+      }
+      if (!footballTeamFound && normalizeFootballClub(line.trim())) {
+        footballTeamFound = true;
+        if (footballLineIdx === null) footballLineIdx = i;
+      }
+    }
+
+    // Com keywords de futebol + time de futebol = Futebol
+    if (footballTeamFound) {
+      return { esporte: "Futebol", consumedIdx: footballLineIdx };
+    }
+  }
+
+  // PRIORIDADE 2: Scoring por liga específica (NBA > NFL > MLB)
   const nbaScore = computeLeagueScore(lines, NBA_CURRENT_TEAMS, NBA_TEAM_ALIASES as any, "Basquete");
   const nflScore = computeLeagueScore(lines, NFL_CURRENT_TEAMS, NFL_TEAM_ALIASES as any, "Futebol Americano");
   const mlbScore = computeLeagueScore(lines, MLB_CURRENT_TEAMS, MLB_TEAM_ALIASES as any, "Beisebol");
@@ -122,7 +156,7 @@ function extractEsporte(lines: string[]): { esporte: string | null; consumedIdx:
     return { esporte: best.name, consumedIdx: best.consumedIdx };
   }
 
-  // Detecção de futebol: requer evidências positivas (times + keywords)
+  // PRIORIDADE 3: Fallback - futebol sem keywords (menos confiável)
   let footballTeamFound = false;
   let footballLineIdx: number | null = null;
   
@@ -142,8 +176,8 @@ function extractEsporte(lines: string[]): { esporte: string | null; consumedIdx:
     }
   }
 
-  // Gate de futebol: requer time E palavras-chave específicas
-  if (footballTeamFound && hasFootballKeywords(lines)) {
+  // Sem keywords, só retorna futebol se encontrar time
+  if (footballTeamFound) {
     return { esporte: "Futebol", consumedIdx: footballLineIdx };
   }
   
