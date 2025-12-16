@@ -1,0 +1,7 @@
+{
+  "name": "real-planilha-repos",
+  "version": "1.0.0",
+  "description": "Conjunto de repositórios independentes: BackTrack (API), RealTrack (Frontend), BilheteTracker (Microserviço OCR)",
+  "private": true,
+  "license": "MIT"
+}

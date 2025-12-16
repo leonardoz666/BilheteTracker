@@ -1,0 +1,275 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`Period Decorator with Player Props 1º Quarto - Nikola Jokic - Rebotes 1+ 1`] = `
+{
+  "condicao": "1+",
+  "confianca": "alta",
+  "estatistica": "Rebotes",
+  "jogador": "Nikola Jokic",
+  "periodo": "1º Quarto",
+  "time": null,
+  "timeAbrev": null,
+  "tipo": "player_prop",
+  "valor": 1,
+}
+`;
+
+exports[`Period Decorator with Player Props 1º Tempo - Nikola Jokic - Rebotes 1+ 1`] = `
+{
+  "condicao": "1+",
+  "confianca": "alta",
+  "estatistica": "Rebotes",
+  "jogador": "Nikola Jokic",
+  "periodo": "1º Tempo",
+  "time": null,
+  "timeAbrev": null,
+  "tipo": "player_prop",
+  "valor": 1,
+}
+`;
+
+exports[`Period Decorator with Player Props 2º Quarto - Nikola Jokic - Rebotes 1+ 1`] = `
+{
+  "condicao": "1+",
+  "confianca": "alta",
+  "estatistica": "Rebotes",
+  "jogador": "Nikola Jokic",
+  "periodo": "2º Quarto",
+  "time": null,
+  "timeAbrev": null,
+  "tipo": "player_prop",
+  "valor": 1,
+}
+`;
+
+exports[`Period Decorator with Player Props 2º Tempo - Nikola Jokic - Rebotes 1+ 1`] = `
+{
+  "condicao": "1+",
+  "confianca": "alta",
+  "estatistica": "Rebotes",
+  "jogador": "Nikola Jokic",
+  "periodo": "2º Tempo",
+  "time": null,
+  "timeAbrev": null,
+  "tipo": "player_prop",
+  "valor": 1,
+}
+`;
+
+exports[`Period Decorator with Player Props Cada time bate 4+ escanteios with 1º Quarto 1`] = `
+{
+  "condicao": "4+",
+  "confianca": "media",
+  "estatistica": "Escanteios",
+  "jogador": null,
+  "periodo": "1º Quarto",
+  "time": "cada time",
+  "timeAbrev": null,
+  "tipo": "match_prop",
+  "valor": 4,
+}
+`;
+
+exports[`Period Decorator with Player Props FT → Jogo - Nikola Jokic - Rebotes 1+ 1`] = `
+{
+  "condicao": "1+",
+  "confianca": "alta",
+  "estatistica": "Rebotes",
+  "jogador": "Nikola Jokic",
+  "periodo": "Jogo",
+  "time": null,
+  "timeAbrev": null,
+  "tipo": "player_prop",
+  "valor": 1,
+}
+`;
+
+exports[`Period Decorator with Player Props HT → 1º Tempo - Nikola Jokic - Rebotes 1+ 1`] = `
+{
+  "condicao": "1+",
+  "confianca": "alta",
+  "estatistica": "Rebotes",
+  "jogador": "Nikola Jokic",
+  "periodo": "1º Tempo",
+  "time": null,
+  "timeAbrev": null,
+  "tipo": "player_prop",
+  "valor": 1,
+}
+`;
+
+exports[`Period Decorator with Player Props Handicap Asiático -0.25 without period 1`] = `
+{
+  "condicao": "-0.25",
+  "confianca": "media",
+  "estatistica": "Handicap Asiático",
+  "jogador": null,
+  "periodo": "Jogo",
+  "time": "Juventus",
+  "timeAbrev": null,
+  "tipo": "match_prop",
+  "valor": null,
+}
+`;
+
+exports[`Period Decorator with Player Props Intervalo → 1º Tempo - Nikola Jokic - Rebotes 1+ 1`] = `
+{
+  "condicao": "1+",
+  "confianca": "alta",
+  "estatistica": "Rebotes",
+  "jogador": "Nikola Jokic",
+  "periodo": "1º Tempo",
+  "time": null,
+  "timeAbrev": null,
+  "tipo": "player_prop",
+  "valor": 1,
+}
+`;
+
+exports[`Period Decorator with Player Props Jokic FT 2+ AST: reforça período Jogo e anti-duplicação 1`] = `
+[
+  {
+    "condicao": "2+",
+    "confianca": "alta",
+    "estatistica": "Assistências",
+    "jogador": "Nikola Jokic",
+    "periodo": "Jogo",
+    "time": null,
+    "timeAbrev": null,
+    "tipo": "player_prop",
+    "valor": 2,
+  },
+]
+`;
+
+exports[`Period Decorator with Player Props Jokic FT 15+ PTS: período Jogo e anti-duplicação 1`] = `
+[
+  {
+    "condicao": "15+",
+    "confianca": "alta",
+    "estatistica": "Pontos",
+    "jogador": "Nikola Jokic",
+    "periodo": "Jogo",
+    "time": null,
+    "timeAbrev": null,
+    "tipo": "player_prop",
+    "valor": 15,
+  },
+]
+`;
+
+exports[`Period Decorator with Player Props Jokic HT 5+ AST: canonicaliza 1º Tempo e anti-duplicação 1`] = `
+[
+  {
+    "condicao": "5+",
+    "confianca": "alta",
+    "estatistica": "Assistências",
+    "jogador": "Nikola Jokic",
+    "periodo": "1º Tempo",
+    "time": null,
+    "timeAbrev": null,
+    "tipo": "player_prop",
+    "valor": 5,
+  },
+]
+`;
+
+exports[`Period Decorator with Player Props Jokic HT 10+ PTS: período 1º Tempo e anti-duplicação 1`] = `
+[
+  {
+    "condicao": "10+",
+    "confianca": "alta",
+    "estatistica": "Pontos",
+    "jogador": "Nikola Jokic",
+    "periodo": "1º Tempo",
+    "time": null,
+    "timeAbrev": null,
+    "tipo": "player_prop",
+    "valor": 10,
+  },
+]
+`;
+
+exports[`Period Decorator with Player Props Jokic Q2 5+ REB: decorador período Q2 e anti-duplicação 1`] = `
+[
+  {
+    "condicao": "5+",
+    "confianca": "alta",
+    "estatistica": "Rebotes",
+    "jogador": "Nikola Jokic",
+    "periodo": "2º Quarto",
+    "time": null,
+    "timeAbrev": null,
+    "tipo": "player_prop",
+    "valor": 5,
+  },
+]
+`;
+
+exports[`Period Decorator with Player Props Jokic Q4 8+ PTS: período 4º Quarto e anti-duplicação 1`] = `
+[
+  {
+    "condicao": "8+",
+    "confianca": "alta",
+    "estatistica": "Pontos",
+    "jogador": "Nikola Jokic",
+    "periodo": "4º Quarto",
+    "time": null,
+    "timeAbrev": null,
+    "tipo": "player_prop",
+    "valor": 8,
+  },
+]
+`;
+
+exports[`Period Decorator with Player Props Jokic multi-lines: 10+ AST, 10+ REB, 1º Quarto 1+ REB 1`] = `
+[
+  {
+    "condicao": "10+",
+    "confianca": "alta",
+    "estatistica": "Assistências",
+    "jogador": "Nikola Jokic",
+    "periodo": "Jogo",
+    "time": null,
+    "timeAbrev": null,
+    "tipo": "player_prop",
+    "valor": 10,
+  },
+  {
+    "condicao": "10+",
+    "confianca": "alta",
+    "estatistica": "Rebotes",
+    "jogador": "Nikola Jokic",
+    "periodo": "Jogo",
+    "time": null,
+    "timeAbrev": null,
+    "tipo": "player_prop",
+    "valor": 10,
+  },
+  {
+    "condicao": "1+",
+    "confianca": "alta",
+    "estatistica": "Rebotes",
+    "jogador": "Nikola Jokic",
+    "periodo": "1º Quarto",
+    "time": null,
+    "timeAbrev": null,
+    "tipo": "player_prop",
+    "valor": 1,
+  },
+]
+`;
+
+exports[`Period Decorator with Player Props Total de Gols Over 2.75 with HT 1`] = `
+{
+  "condicao": "2.75+",
+  "confianca": "alta",
+  "estatistica": "Mais de",
+  "jogador": "Total de Gols",
+  "periodo": "1º Tempo",
+  "time": null,
+  "timeAbrev": null,
+  "tipo": "player_prop",
+  "valor": 2.75,
+}
+`;

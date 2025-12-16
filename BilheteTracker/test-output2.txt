@@ -1,0 +1,2465 @@
+
+> bilhete-tracker@1.0.1 test
+> jest
+
+PASS src/tests/changed-odds.test.ts
+  ÔùÅ Console
+
+    console.log
+      ÔÜá´©Å Ambiente de teste detectado. Usando MockLlmClient
+
+      at src/utils/llmClient.ts:334:13
+
+    console.log
+      USANDO TICKET LLM: true
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1140:11)
+
+    console.log
+      Apostas Extra├¡das do LLM: []
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1191:13)
+
+    console.log
+      [PIPELINE] Apostas finais antes do fallback: 0
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1387:13)
+
+    console.log
+      ­ƒÅù´©Å FALLBACK: Preenchendo campos null (sem infer├¬ncia)...
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:938:11)
+
+    console.log
+      Apostas antes do buildMercado: []
+
+      at formatBilhete (src/pipeline/formatterFinal.ts:150:11)
+
+    console.log
+      USANDO TICKET LLM: true
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1140:11)
+
+    console.log
+      Apostas Extra├¡das do LLM: []
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1191:13)
+
+    console.log
+      [PIPELINE] Apostas finais antes do fallback: 1
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1387:13)
+
+    console.log
+      ­ƒÅù´©Å FALLBACK: Preenchendo campos null (sem infer├¬ncia)...
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:938:11)
+
+    console.log
+      Ô£à Fallback conclu├¡do: 1 apostas (0 BTTS adicionados)
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:981:11)
+
+    console.log
+      Apostas antes do buildMercado: [
+        {
+          tipo: 'player_prop',
+          jogador: 'Julius Randle',
+          estatistica: 'Pontos',
+          condicao: '10+',
+          valor: 10,
+          time: null,
+          timeAbrev: null,
+          periodo: 'Jogo',
+          confianca: 'alta'
+        }
+      ]
+
+      at formatBilhete (src/pipeline/formatterFinal.ts:150:11)
+
+    console.log
+      USANDO TICKET LLM: true
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1140:11)
+
+    console.log
+      Apostas Extra├¡das do LLM: []
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1191:13)
+
+    console.log
+      [PIPELINE] Apostas finais antes do fallback: 1
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1387:13)
+
+    console.log
+      ­ƒÅù´©Å FALLBACK: Preenchendo campos null (sem infer├¬ncia)...
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:938:11)
+
+    console.log
+      Ô£à Fallback conclu├¡do: 1 apostas (0 BTTS adicionados)
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:981:11)
+
+    console.log
+      Apostas antes do buildMercado: [
+        {
+          tipo: 'player_prop',
+          jogador: 'Luka Doncic',
+          estatistica: 'Pontos',
+          condicao: '20+',
+          valor: 20,
+          time: null,
+          timeAbrev: null,
+          periodo: 'Jogo',
+          confianca: 'alta'
+        }
+      ]
+
+      at formatBilhete (src/pipeline/formatterFinal.ts:150:11)
+
+    console.log
+      USANDO TICKET LLM: true
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1140:11)
+
+    console.log
+      Apostas Extra├¡das do LLM: []
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1191:13)
+
+    console.log
+      [PIPELINE] Apostas finais antes do fallback: 1
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1387:13)
+
+    console.log
+      ­ƒÅù´©Å FALLBACK: Preenchendo campos null (sem infer├¬ncia)...
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:938:11)
+
+    console.log
+      Ô£à Fallback conclu├¡do: 1 apostas (0 BTTS adicionados)
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:981:11)
+
+    console.log
+      Apostas antes do buildMercado: [
+        {
+          tipo: 'player_prop',
+          jogador: 'Giannis',
+          estatistica: 'Pontos',
+          condicao: '25+',
+          valor: 25,
+          time: null,
+          timeAbrev: null,
+          periodo: 'Jogo',
+          confianca: 'alta'
+        }
+      ]
+
+      at formatBilhete (src/pipeline/formatterFinal.ts:150:11)
+
+PASS src/tests/periods.snapshot.test.ts
+  ÔùÅ Console
+
+    console.log
+      ÔÜá´©Å Ambiente de teste detectado. Usando MockLlmClient
+
+      at src/utils/llmClient.ts:334:13
+
+PASS src/tests/user-reported-bugs.test.ts
+  ÔùÅ Console
+
+    console.log
+      ÔÜá´©Å Ambiente de teste detectado. Usando MockLlmClient
+
+      at src/utils/llmClient.ts:334:13
+
+    console.log
+      USANDO TICKET LLM: true
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1140:11)
+
+    console.log
+      Apostas Extra├¡das do LLM: [
+        {
+          "tipo": "player_prop",
+          "jogador": "Jogador",
+          "estatistica": "Rebotes",
+          "condicao": null,
+          "valor": null,
+          "time": null,
+          "timeAbrev": null,
+          "periodo": "Jogo",
+          "confianca": "alta"
+        }
+      ]
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1191:13)
+
+    console.log
+      [PIPELINE] Apostas finais antes do fallback: 4
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1387:13)
+
+    console.log
+      ­ƒÅù´©Å FALLBACK: Preenchendo campos null (sem infer├¬ncia)...
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:938:11)
+
+    console.log
+      Ô£à Fallback conclu├¡do: 4 apostas (0 BTTS adicionados)
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:981:11)
+
+    console.log
+      Apostas antes do buildMercado: [
+        {
+          tipo: 'player_prop',
+          jogador: 'Nikola Jokic',
+          estatistica: 'Assist├¬ncias',
+          condicao: '10+',
+          valor: 10,
+          time: null,
+          timeAbrev: null,
+          periodo: 'Jogo',
+          confianca: 'alta'
+        },
+        {
+          tipo: 'player_prop',
+          jogador: 'Nikola Jokic',
+          estatistica: 'Rebotes',
+          condicao: '10+',
+          valor: 10,
+          time: null,
+          timeAbrev: null,
+          periodo: 'Jogo',
+          confianca: 'alta'
+        },
+        {
+          tipo: 'player_prop',
+          jogador: 'Nikola Jokic',
+          estatistica: 'Rebotes',
+          condicao: '1+',
+          valor: 1,
+          time: null,
+          timeAbrev: null,
+          periodo: '1┬║ Quarto',
+          confianca: 'alta'
+        }
+      ]
+
+      at formatBilhete (src/pipeline/formatterFinal.ts:150:11)
+
+    console.log
+      
+      === APOSTAS DETECTADAS ===
+
+      at Object.<anonymous> (src/tests/user-reported-bugs.test.ts:104:13)
+
+    console.log
+      1. tipo=player_prop, jogador=Nikola Jokic, estatistica=Assist├¬ncias, condicao=10+
+
+      at src/tests/user-reported-bugs.test.ts:106:15
+          at Array.forEach (<anonymous>)
+
+    console.log
+      2. tipo=player_prop, jogador=Nikola Jokic, estatistica=Rebotes, condicao=10+
+
+      at src/tests/user-reported-bugs.test.ts:106:15
+          at Array.forEach (<anonymous>)
+
+    console.log
+      3. tipo=player_prop, jogador=Nikola Jokic, estatistica=Rebotes, condicao=1+
+
+      at src/tests/user-reported-bugs.test.ts:106:15
+          at Array.forEach (<anonymous>)
+
+    console.log
+      USANDO TICKET LLM: true
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1140:11)
+
+    console.log
+      Apostas Extra├¡das do LLM: []
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1191:13)
+
+    console.log
+      [PIPELINE] Apostas finais antes do fallback: 3
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1387:13)
+
+    console.log
+      ­ƒÅù´©Å FALLBACK: Preenchendo campos null (sem infer├¬ncia)...
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:938:11)
+
+    console.log
+      Ô£à Fallback conclu├¡do: 3 apostas (0 BTTS adicionados)
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:981:11)
+
+    console.log
+      Apostas antes do buildMercado: [
+        {
+          tipo: 'player_prop',
+          jogador: 'Nikola Jokic',
+          estatistica: 'Assist├¬ncias',
+          condicao: '10+',
+          valor: 10,
+          time: null,
+          timeAbrev: null,
+          periodo: 'Jogo',
+          confianca: 'alta'
+        },
+        {
+          tipo: 'player_prop',
+          jogador: 'Nikola Jokic',
+          estatistica: 'Rebotes',
+          condicao: '10+',
+          valor: 10,
+          time: null,
+          timeAbrev: null,
+          periodo: 'Jogo',
+          confianca: 'alta'
+        },
+        {
+          tipo: 'player_prop',
+          jogador: 'Nikola Jokic',
+          estatistica: 'Rebotes',
+          condicao: '1+',
+          valor: 1,
+          time: null,
+          timeAbrev: null,
+          periodo: '1┬║ Quarto',
+          confianca: 'alta'
+        }
+      ]
+
+      at formatBilhete (src/pipeline/formatterFinal.ts:150:11)
+
+    console.log
+      
+      === APOSTAS DETECTADAS (BackTrack) ===
+
+      at Object.<anonymous> (src/tests/user-reported-bugs.test.ts:141:13)
+
+    console.log
+      1. tipo=player_prop, jogador=Nikola Jokic, estatistica=Assist├¬ncias, condicao=10+, periodo=Jogo
+
+      at src/tests/user-reported-bugs.test.ts:143:15
+          at Array.forEach (<anonymous>)
+
+    console.log
+      2. tipo=player_prop, jogador=Nikola Jokic, estatistica=Rebotes, condicao=10+, periodo=Jogo
+
+      at src/tests/user-reported-bugs.test.ts:143:15
+          at Array.forEach (<anonymous>)
+
+    console.log
+      3. tipo=player_prop, jogador=Nikola Jokic, estatistica=Rebotes, condicao=1+, periodo=1┬║ Quarto
+
+      at src/tests/user-reported-bugs.test.ts:143:15
+          at Array.forEach (<anonymous>)
+
+PASS src/tests/ah_total.spec.ts
+  ÔùÅ Console
+
+    console.log
+      ÔÜá´©Å Ambiente de teste detectado. Usando MockLlmClient
+
+      at src/utils/llmClient.ts:334:13
+
+    console.log
+      USANDO TICKET LLM: true
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1140:11)
+
+    console.log
+      Apostas Extra├¡das do LLM: []
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1191:13)
+
+    console.log
+      [PIPELINE] Apostas finais antes do fallback: 1
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1387:13)
+
+    console.log
+      ­ƒÅù´©Å FALLBACK: Preenchendo campos null (sem infer├¬ncia)...
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:938:11)
+
+    console.log
+      Ô£à Fallback conclu├¡do: 1 apostas (0 BTTS adicionados)
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:981:11)
+
+    console.log
+      Apostas antes do buildMercado: [
+        {
+          tipo: 'match_prop',
+          estatistica: 'Handicap Asi├ítico',
+          condicao: '-0.25',
+          jogador: null,
+          valor: null,
+          time: 'Juventus',
+          timeAbrev: null,
+          periodo: 'Jogo',
+          confianca: 'media'
+        }
+      ]
+
+      at formatBilhete (src/pipeline/formatterFinal.ts:150:11)
+
+    console.log
+      [ah_total] AH -0.25 Juventus match_prop Handicap Asi├ítico -0.25 Juventus
+
+      at testAhTotal (src/tests/ah_total.spec.ts:17:13)
+
+    console.log
+      USANDO TICKET LLM: true
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1140:11)
+
+    console.log
+      Apostas Extra├¡das do LLM: [
+        {
+          "tipo": "match_prop",
+          "jogador": null,
+          "estatistica": "Total de Gols",
+          "condicao": "Mais de 2.75",
+          "valor": 2.75,
+          "time": null,
+          "timeAbrev": null,
+          "periodo": "Jogo",
+          "confianca": "alta"
+        }
+      ]
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1191:13)
+
+    console.log
+      [PIPELINE] Apostas finais antes do fallback: 2
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1387:13)
+
+    console.log
+      ­ƒÅù´©Å FALLBACK: Preenchendo campos null (sem infer├¬ncia)...
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:938:11)
+
+    console.log
+      Ô£à Fallback conclu├¡do: 2 apostas (0 BTTS adicionados)
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:981:11)
+
+    console.log
+      Apostas antes do buildMercado: [
+        {
+          tipo: 'match_prop',
+          jogador: null,
+          estatistica: 'Total Gols',
+          condicao: 'Mais de 2.75',
+          valor: 2.75,
+          time: null,
+          timeAbrev: null,
+          periodo: 'Jogo',
+          confianca: 'alta'
+        }
+      ]
+
+      at formatBilhete (src/pipeline/formatterFinal.ts:150:11)
+
+    console.log
+      [ah_total] Total 2.75 match_prop Total Gols Mais de 2.75 null
+
+      at testAhTotal (src/tests/ah_total.spec.ts:17:13)
+
+    console.log
+      USANDO TICKET LLM: true
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1140:11)
+
+    console.log
+      Apostas Extra├¡das do LLM: []
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1191:13)
+
+    console.log
+      [PIPELINE] Apostas finais antes do fallback: 1
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1387:13)
+
+    console.log
+      ­ƒÅù´©Å FALLBACK: Preenchendo campos null (sem infer├¬ncia)...
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:938:11)
+
+    console.log
+      Ô£à Fallback conclu├¡do: 1 apostas (0 BTTS adicionados)
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:981:11)
+
+    console.log
+      Apostas antes do buildMercado: [
+        {
+          tipo: 'match_prop',
+          estatistica: 'Total Gols',
+          condicao: 'Mais de 2.25',
+          jogador: null,
+          valor: null,
+          time: null,
+          timeAbrev: null,
+          periodo: 'Jogo',
+          confianca: 'media'
+        }
+      ]
+
+      at formatBilhete (src/pipeline/formatterFinal.ts:150:11)
+
+    console.log
+      [ah_total] Over 2.25 match_prop Total Gols Mais de 2.25 null
+
+      at testAhTotal (src/tests/ah_total.spec.ts:17:13)
+
+    console.log
+      USANDO TICKET LLM: true
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1140:11)
+
+    console.log
+      Apostas Extra├¡das do LLM: []
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1191:13)
+
+    console.log
+      [PIPELINE] Apostas finais antes do fallback: 1
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1387:13)
+
+    console.log
+      ­ƒÅù´©Å FALLBACK: Preenchendo campos null (sem infer├¬ncia)...
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:938:11)
+
+    console.log
+      Ô£à Fallback conclu├¡do: 1 apostas (0 BTTS adicionados)
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:981:11)
+
+    console.log
+      Apostas antes do buildMercado: [
+        {
+          tipo: 'match_prop',
+          estatistica: 'Total Gols',
+          condicao: 'Mais de 2.25',
+          jogador: null,
+          valor: null,
+          time: null,
+          timeAbrev: null,
+          periodo: 'Jogo',
+          confianca: 'media'
+        }
+      ]
+
+      at formatBilhete (src/pipeline/formatterFinal.ts:150:11)
+
+    console.log
+      [ah_total] Dual Over picks same period match_prop Total Gols Mais de 2.25 null
+
+      at testAhTotal (src/tests/ah_total.spec.ts:17:13)
+
+    console.log
+      USANDO TICKET LLM: true
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1140:11)
+
+    console.log
+      Apostas Extra├¡das do LLM: []
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1191:13)
+
+    console.log
+      [PIPELINE] Apostas finais antes do fallback: 2
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1387:13)
+
+    console.log
+      ­ƒÅù´©Å FALLBACK: Preenchendo campos null (sem infer├¬ncia)...
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:938:11)
+
+    console.log
+      Ô£à Fallback conclu├¡do: 2 apostas (0 BTTS adicionados)
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:981:11)
+
+    console.warn
+      ÔÜá´©Å Conflito OVER/UNDER para o mesmo per├¡odo, descartando ambos: Jogo Mais de 2.5 Menos de 2.5
+
+      1111 |   for (const [periodoKey, bucket] of byPeriodo.entries()) {
+      1112 |     if (bucket.over && bucket.under) {
+    > 1113 |       console.warn("ÔÜá´©Å Conflito OVER/UNDER para o mesmo per├¡odo, descartando ambos:", periodoKey, bucket.over.condicao, bucket.under.condicao);
+           |               ^
+      1114 |       continue;
+      1115 |     }
+      1116 |     if (bucket.over) resolved.push(bucket.over);
+
+      at enforceSingleTotalGols (src/pipeline/semanticTicketLLM.ts:1113:15)
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1389:19)
+      at testAhTotal (src/tests/ah_total.spec.ts:15:17)
+      at Object.<anonymous> (src/tests/ah_total.spec.ts:23:5)
+
+    console.log
+      Apostas antes do buildMercado: []
+
+      at formatBilhete (src/pipeline/formatterFinal.ts:150:11)
+
+    console.log
+      [ah_total] Over/Under conflict same period undefined undefined undefined undefined
+
+      at testAhTotal (src/tests/ah_total.spec.ts:17:13)
+
+    console.log
+      USANDO TICKET LLM: true
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1140:11)
+
+    console.log
+      Apostas Extra├¡das do LLM: []
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1191:13)
+
+    console.log
+      [PIPELINE] Apostas finais antes do fallback: 1
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1387:13)
+
+    console.log
+      ­ƒÅù´©Å FALLBACK: Preenchendo campos null (sem infer├¬ncia)...
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:938:11)
+
+    console.log
+      Ô£à Fallback conclu├¡do: 1 apostas (0 BTTS adicionados)
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:981:11)
+
+    console.log
+      Apostas antes do buildMercado: [
+        {
+          tipo: 'player_prop',
+          jogador: 'HT',
+          estatistica: 'Over',
+          condicao: '2.5+',
+          valor: 2.5,
+          time: null,
+          timeAbrev: null,
+          periodo: 'Jogo',
+          confianca: 'alta'
+        }
+      ]
+
+      at formatBilhete (src/pipeline/formatterFinal.ts:150:11)
+
+    console.log
+      [ah_total] HT vs 1┬║ Tempo equivalence player_prop Over 2.5+ null
+
+      at testAhTotal (src/tests/ah_total.spec.ts:17:13)
+
+PASS src/tests/golden-rule-event.test.ts
+PASS src/tests/separated-lines-events.test.ts
+PASS src/tests/canonical-names-only.test.ts
+PASS src/tests/nfl-stat-normalization.test.ts
+  ÔùÅ Console
+
+    console.log
+      ÔÜá´©Å Ambiente de teste detectado. Usando MockLlmClient
+
+      at src/utils/llmClient.ts:334:13
+
+    console.log
+      USANDO TICKET LLM: true
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1140:11)
+
+    console.log
+      Apostas Extra├¡das do LLM: []
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1191:13)
+
+    console.log
+      [PIPELINE] Apostas finais antes do fallback: 1
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1387:13)
+
+    console.log
+      ­ƒÅù´©Å FALLBACK: Preenchendo campos null (sem infer├¬ncia)...
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:938:11)
+
+    console.log
+      Ô£à Fallback conclu├¡do: 1 apostas (0 BTTS adicionados)
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:981:11)
+
+    console.log
+      Apostas antes do buildMercado: [
+        {
+          tipo: 'player_prop',
+          jogador: 'Josh Allen',
+          estatistica: 'Recep├º├Áes',
+          condicao: 'Mais de 3.5',
+          valor: 3.5,
+          time: null,
+          timeAbrev: null,
+          periodo: 'Jogo',
+          confianca: 'alta'
+        }
+      ]
+
+      at formatBilhete (src/pipeline/formatterFinal.ts:150:11)
+
+    console.log
+      USANDO TICKET LLM: true
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1140:11)
+
+    console.log
+      Apostas Extra├¡das do LLM: []
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1191:13)
+
+    console.log
+      [PIPELINE] Apostas finais antes do fallback: 1
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1387:13)
+
+    console.log
+      ­ƒÅù´©Å FALLBACK: Preenchendo campos null (sem infer├¬ncia)...
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:938:11)
+
+    console.log
+      Ô£à Fallback conclu├¡do: 1 apostas (0 BTTS adicionados)
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:981:11)
+
+    console.log
+      Apostas antes do buildMercado: [
+        {
+          tipo: 'player_prop',
+          jogador: 'Kyler Murray',
+          estatistica: 'Touchdowns',
+          condicao: 'Mais de 1.5',
+          valor: 1.5,
+          time: null,
+          timeAbrev: null,
+          periodo: 'Jogo',
+          confianca: 'alta'
+        }
+      ]
+
+      at formatBilhete (src/pipeline/formatterFinal.ts:150:11)
+
+PASS src/tests/production-ocr.test.ts
+  ÔùÅ Console
+
+    console.log
+      ÔÜá´©Å Ambiente de teste detectado. Usando MockLlmClient
+
+      at src/utils/llmClient.ts:334:13
+
+    console.log
+      USANDO TICKET LLM: true
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1140:11)
+
+    console.log
+      Apostas Extra├¡das do LLM: [
+        {
+          "tipo": "winner",
+          "time": "Juventus",
+          "periodo": "1┬║ Tempo",
+          "confianca": "media"
+        },
+        {
+          "tipo": "match_prop",
+          "jogador": null,
+          "estatistica": "Total de Gols",
+          "condicao": "Mais de 25",
+          "valor": 25,
+          "time": null,
+          "timeAbrev": null,
+          "periodo": "Jogo",
+          "confianca": "alta"
+        },
+        {
+          "tipo": "player_prop",
+          "jogador": "Francisco Concei├º├úo",
+          "estatistica": "Chutar a Gol",
+          "condicao": null,
+          "valor": null,
+          "time": null,
+          "timeAbrev": "JUV",
+          "periodo": "Jogo",
+          "confianca": "alta"
+        }
+      ]
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1191:13)
+
+    console.log
+      [PIPELINE] Apostas finais antes do fallback: 3
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1387:13)
+
+    console.log
+      ­ƒÅù´©Å FALLBACK: Preenchendo campos null (sem infer├¬ncia)...
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:938:11)
+
+    console.log
+      Ô£à Fallback conclu├¡do: 3 apostas (0 BTTS adicionados)
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:981:11)
+
+    console.log
+      Apostas antes do buildMercado: [
+        {
+          tipo: 'winner',
+          time: 'Juventus',
+          periodo: '1┬║ Tempo',
+          confianca: 'media',
+          estatistica: '',
+          condicao: ''
+        },
+        {
+          tipo: 'player_prop',
+          jogador: 'Francisco Concei├º├úo',
+          estatistica: 'Chutar a Gol',
+          condicao: 'Sim',
+          valor: null,
+          time: null,
+          timeAbrev: 'JUV',
+          periodo: 'Jogo',
+          confianca: 'alta'
+        },
+        {
+          tipo: 'match_prop',
+          jogador: null,
+          estatistica: 'Total Gols',
+          condicao: 'Mais de 2.5',
+          valor: 25,
+          time: null,
+          timeAbrev: null,
+          periodo: 'Jogo',
+          confianca: 'alta'
+        }
+      ]
+
+      at formatBilhete (src/pipeline/formatterFinal.ts:150:11)
+
+    console.log
+      
+      === APOSTAS DETECTADAS ===
+
+      at Object.<anonymous> (src/tests/production-ocr.test.ts:35:13)
+
+    console.log
+      1. tipo=winner, jogador=undefined, estatistica=, condicao=
+
+      at src/tests/production-ocr.test.ts:37:15
+          at Array.forEach (<anonymous>)
+
+    console.log
+      2. tipo=player_prop, jogador=Francisco Concei├º├úo, estatistica=Chutar a Gol, condicao=Sim
+
+      at src/tests/production-ocr.test.ts:37:15
+          at Array.forEach (<anonymous>)
+
+    console.log
+      3. tipo=match_prop, jogador=null, estatistica=Total Gols, condicao=Mais de 2.5
+
+      at src/tests/production-ocr.test.ts:37:15
+          at Array.forEach (<anonymous>)
+
+PASS src/tests/collective.spec.ts
+  ÔùÅ Console
+
+    console.log
+      ÔÜá´©Å Ambiente de teste detectado. Usando MockLlmClient
+
+      at src/utils/llmClient.ts:334:13
+
+    console.log
+      USANDO TICKET LLM: true
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1140:11)
+
+    console.log
+      Apostas Extra├¡das do LLM: []
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1191:13)
+
+    console.log
+      [PIPELINE] Apostas finais antes do fallback: 1
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1387:13)
+
+    console.log
+      ­ƒÅù´©Å FALLBACK: Preenchendo campos null (sem infer├¬ncia)...
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:938:11)
+
+    console.log
+      Ô£à Fallback conclu├¡do: 1 apostas (0 BTTS adicionados)
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:981:11)
+
+    console.log
+      Apostas antes do buildMercado: [
+        {
+          tipo: 'match_prop',
+          jogador: null,
+          estatistica: 'Ambas Marcam',
+          condicao: 'Sim',
+          valor: null,
+          time: null,
+          timeAbrev: null,
+          periodo: 'Jogo',
+          confianca: 'alta'
+        }
+      ]
+
+      at formatBilhete (src/pipeline/formatterFinal.ts:150:11)
+
+    console.log
+      [collective] BTTS Sim match_prop Ambas Marcam Sim null
+
+      at testCollective (src/tests/collective.spec.ts:14:13)
+
+    console.log
+      USANDO TICKET LLM: true
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1140:11)
+
+    console.log
+      Apostas Extra├¡das do LLM: []
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1191:13)
+
+    console.log
+      [PIPELINE] Apostas finais antes do fallback: 0
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1387:13)
+
+    console.log
+      ­ƒÅù´©Å FALLBACK: Preenchendo campos null (sem infer├¬ncia)...
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:938:11)
+
+    console.log
+      Apostas antes do buildMercado: []
+
+      at formatBilhete (src/pipeline/formatterFinal.ts:150:11)
+
+    console.log
+      [collective] Ambas equipes ÔåÆ cada time undefined undefined undefined undefined
+
+      at testCollective (src/tests/collective.spec.ts:14:13)
+
+    console.log
+      USANDO TICKET LLM: true
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1140:11)
+
+    console.log
+      Apostas Extra├¡das do LLM: [
+        {
+          "tipo": "match_prop",
+          "jogador": null,
+          "estatistica": "Escanteios",
+          "condicao": "4+",
+          "valor": 4,
+          "time": "cada time",
+          "timeAbrev": null,
+          "periodo": "Jogo",
+          "confianca": "media"
+        }
+      ]
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1191:13)
+
+    console.log
+      [PIPELINE] Apostas finais antes do fallback: 1
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1387:13)
+
+    console.log
+      ­ƒÅù´©Å FALLBACK: Preenchendo campos null (sem infer├¬ncia)...
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:938:11)
+
+    console.log
+      Ô£à Fallback conclu├¡do: 1 apostas (0 BTTS adicionados)
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:981:11)
+
+    console.log
+      Apostas antes do buildMercado: [
+        {
+          tipo: 'match_prop',
+          jogador: null,
+          estatistica: 'Escanteios',
+          condicao: '4+',
+          valor: 4,
+          time: 'cada time',
+          timeAbrev: null,
+          periodo: 'Jogo',
+          confianca: 'media'
+        }
+      ]
+
+      at formatBilhete (src/pipeline/formatterFinal.ts:150:11)
+
+    console.log
+      [collective] Cada time escanteios match_prop Escanteios 4+ cada time
+
+      at testCollective (src/tests/collective.spec.ts:14:13)
+
+PASS src/tests/no-automatic-dupla-chance.test.ts
+  ÔùÅ Console
+
+    console.log
+      ÔÜá´©Å Ambiente de teste detectado. Usando MockLlmClient
+
+      at src/utils/llmClient.ts:334:13
+
+    console.log
+      USANDO TICKET LLM: true
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1140:11)
+
+    console.log
+      Apostas Extra├¡das do LLM: []
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1191:13)
+
+    console.log
+      [PIPELINE] Apostas finais antes do fallback: 0
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1387:13)
+
+    console.log
+      ­ƒÅù´©Å FALLBACK: Preenchendo campos null (sem infer├¬ncia)...
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:938:11)
+
+    console.log
+      Apostas antes do buildMercado: []
+
+      at formatBilhete (src/pipeline/formatterFinal.ts:150:11)
+
+    console.log
+      USANDO TICKET LLM: true
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1140:11)
+
+    console.log
+      Apostas Extra├¡das do LLM: []
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1191:13)
+
+    console.log
+      [PIPELINE] Apostas finais antes do fallback: 0
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1387:13)
+
+    console.log
+      ­ƒÅù´©Å FALLBACK: Preenchendo campos null (sem infer├¬ncia)...
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:938:11)
+
+    console.log
+      Apostas antes do buildMercado: []
+
+      at formatBilhete (src/pipeline/formatterFinal.ts:150:11)
+
+    console.log
+      USANDO TICKET LLM: true
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1140:11)
+
+    console.log
+      Apostas Extra├¡das do LLM: []
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1191:13)
+
+    console.log
+      [PIPELINE] Apostas finais antes do fallback: 0
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1387:13)
+
+    console.log
+      ­ƒÅù´©Å FALLBACK: Preenchendo campos null (sem infer├¬ncia)...
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:938:11)
+
+    console.log
+      Apostas antes do buildMercado: []
+
+      at formatBilhete (src/pipeline/formatterFinal.ts:150:11)
+
+    console.log
+      USANDO TICKET LLM: true
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1140:11)
+
+    console.log
+      Apostas Extra├¡das do LLM: []
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1191:13)
+
+    console.log
+      [PIPELINE] Apostas finais antes do fallback: 0
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1387:13)
+
+    console.log
+      ­ƒÅù´©Å FALLBACK: Preenchendo campos null (sem infer├¬ncia)...
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:938:11)
+
+    console.log
+      Apostas antes do buildMercado: []
+
+      at formatBilhete (src/pipeline/formatterFinal.ts:150:11)
+
+    console.log
+      USANDO TICKET LLM: true
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1140:11)
+
+    console.log
+      Apostas Extra├¡das do LLM: []
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1191:13)
+
+    console.log
+      [PIPELINE] Apostas finais antes do fallback: 1
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1387:13)
+
+    console.log
+      ­ƒÅù´©Å FALLBACK: Preenchendo campos null (sem infer├¬ncia)...
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:938:11)
+
+    console.log
+      Ô£à Fallback conclu├¡do: 1 apostas (0 BTTS adicionados)
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:981:11)
+
+    console.log
+      Apostas antes do buildMercado: [
+        {
+          tipo: 'match_prop',
+          jogador: null,
+          estatistica: 'Ambas Marcam',
+          condicao: 'Sim',
+          valor: null,
+          time: null,
+          timeAbrev: null,
+          periodo: 'Jogo',
+          confianca: 'alta'
+        }
+      ]
+
+      at formatBilhete (src/pipeline/formatterFinal.ts:150:11)
+
+PASS src/tests/football-integration.test.ts
+PASS src/tests/line-merging.test.ts
+  ÔùÅ Console
+
+    console.log
+      ­ƒöÑ­ƒöÑ­ƒöÑ NOVO NORMALIZE OCR EM EXECU├ç├âO ­ƒöÑ­ƒöÑ­ƒöÑ
+
+      at normalizeOcr (src/ocr/normalizeOcr.ts:357:11)
+
+    console.log
+      ­ƒöÑ­ƒöÑ­ƒöÑ NOVO NORMALIZE OCR EM EXECU├ç├âO ­ƒöÑ­ƒöÑ­ƒöÑ
+
+      at normalizeOcr (src/ocr/normalizeOcr.ts:357:11)
+
+    console.log
+      ­ƒöÑ­ƒöÑ­ƒöÑ NOVO NORMALIZE OCR EM EXECU├ç├âO ­ƒöÑ­ƒöÑ­ƒöÑ
+
+      at normalizeOcr (src/ocr/normalizeOcr.ts:357:11)
+
+    console.log
+      ­ƒöÑ­ƒöÑ­ƒöÑ NOVO NORMALIZE OCR EM EXECU├ç├âO ­ƒöÑ­ƒöÑ­ƒöÑ
+
+      at normalizeOcr (src/ocr/normalizeOcr.ts:357:11)
+
+    console.log
+      ­ƒöÑ­ƒöÑ­ƒöÑ NOVO NORMALIZE OCR EM EXECU├ç├âO ­ƒöÑ­ƒöÑ­ƒöÑ
+
+      at normalizeOcr (src/ocr/normalizeOcr.ts:357:11)
+
+    console.log
+      ­ƒöÑ­ƒöÑ­ƒöÑ NOVO NORMALIZE OCR EM EXECU├ç├âO ­ƒöÑ­ƒöÑ­ƒöÑ
+
+      at normalizeOcr (src/ocr/normalizeOcr.ts:357:11)
+
+    console.log
+      ­ƒöÑ­ƒöÑ­ƒöÑ NOVO NORMALIZE OCR EM EXECU├ç├âO ­ƒöÑ­ƒöÑ­ƒöÑ
+
+      at normalizeOcr (src/ocr/normalizeOcr.ts:357:11)
+
+    console.log
+      ­ƒöÑ­ƒöÑ­ƒöÑ NOVO NORMALIZE OCR EM EXECU├ç├âO ­ƒöÑ­ƒöÑ­ƒöÑ
+
+      at normalizeOcr (src/ocr/normalizeOcr.ts:357:11)
+
+    console.log
+      ­ƒöÑ­ƒöÑ­ƒöÑ NOVO NORMALIZE OCR EM EXECU├ç├âO ­ƒöÑ­ƒöÑ­ƒöÑ
+
+      at normalizeOcr (src/ocr/normalizeOcr.ts:357:11)
+
+    console.log
+      ­ƒöÑ­ƒöÑ­ƒöÑ NOVO NORMALIZE OCR EM EXECU├ç├âO ­ƒöÑ­ƒöÑ­ƒöÑ
+
+      at normalizeOcr (src/ocr/normalizeOcr.ts:357:11)
+
+    console.log
+      ­ƒöÑ­ƒöÑ­ƒöÑ NOVO NORMALIZE OCR EM EXECU├ç├âO ­ƒöÑ­ƒöÑ­ƒöÑ
+
+      at normalizeOcr (src/ocr/normalizeOcr.ts:357:11)
+
+    console.log
+      ­ƒöÑ­ƒöÑ­ƒöÑ NOVO NORMALIZE OCR EM EXECU├ç├âO ­ƒöÑ­ƒöÑ­ƒöÑ
+
+      at normalizeOcr (src/ocr/normalizeOcr.ts:357:11)
+
+    console.log
+      ­ƒöÑ­ƒöÑ­ƒöÑ NOVO NORMALIZE OCR EM EXECU├ç├âO ­ƒöÑ­ƒöÑ­ƒöÑ
+
+      at normalizeOcr (src/ocr/normalizeOcr.ts:357:11)
+
+PASS src/tests/exact-dedup.test.ts
+  ÔùÅ Console
+
+    console.log
+      ­ƒöÑ­ƒöÑ­ƒöÑ NOVO NORMALIZE OCR EM EXECU├ç├âO ­ƒöÑ­ƒöÑ­ƒöÑ
+
+      at normalizeOcr (src/ocr/normalizeOcr.ts:357:11)
+
+    console.log
+      ­ƒöÑ­ƒöÑ­ƒöÑ NOVO NORMALIZE OCR EM EXECU├ç├âO ­ƒöÑ­ƒöÑ­ƒöÑ
+
+      at normalizeOcr (src/ocr/normalizeOcr.ts:357:11)
+
+    console.log
+      ­ƒöÑ­ƒöÑ­ƒöÑ NOVO NORMALIZE OCR EM EXECU├ç├âO ­ƒöÑ­ƒöÑ­ƒöÑ
+
+      at normalizeOcr (src/ocr/normalizeOcr.ts:357:11)
+
+    console.log
+      ­ƒöÑ­ƒöÑ­ƒöÑ NOVO NORMALIZE OCR EM EXECU├ç├âO ­ƒöÑ­ƒöÑ­ƒöÑ
+
+      at normalizeOcr (src/ocr/normalizeOcr.ts:357:11)
+
+    console.log
+      ­ƒöÑ­ƒöÑ­ƒöÑ NOVO NORMALIZE OCR EM EXECU├ç├âO ­ƒöÑ­ƒöÑ­ƒöÑ
+
+      at normalizeOcr (src/ocr/normalizeOcr.ts:357:11)
+
+    console.log
+      ­ƒöÑ­ƒöÑ­ƒöÑ NOVO NORMALIZE OCR EM EXECU├ç├âO ­ƒöÑ­ƒöÑ­ƒöÑ
+
+      at normalizeOcr (src/ocr/normalizeOcr.ts:357:11)
+
+PASS src/tests/resultadoCluster.spec.ts
+  ÔùÅ Console
+
+    console.log
+      ÔÜá´©Å Ambiente de teste detectado. Usando MockLlmClient
+
+      at src/utils/llmClient.ts:334:13
+
+    console.log
+      USANDO TICKET LLM: true
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1140:11)
+
+    console.log
+      Apostas Extra├¡das do LLM: []
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1191:13)
+
+    console.log
+      [PIPELINE] Apostas finais antes do fallback: 0
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1387:13)
+
+    console.log
+      ­ƒÅù´©Å FALLBACK: Preenchendo campos null (sem infer├¬ncia)...
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:938:11)
+
+    console.log
+      Apostas antes do buildMercado: []
+
+      at formatBilhete (src/pipeline/formatterFinal.ts:150:11)
+
+    console.log
+      [resultado] Dupla Chance Juventus/Empate undefined undefined undefined undefined
+
+      at testResultadoCluster (src/tests/resultadoCluster.spec.ts:14:13)
+
+    console.log
+      USANDO TICKET LLM: true
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1140:11)
+
+    console.log
+      Apostas Extra├¡das do LLM: []
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1191:13)
+
+    console.log
+      [PIPELINE] Apostas finais antes do fallback: 1
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1387:13)
+
+    console.log
+      ­ƒÅù´©Å FALLBACK: Preenchendo campos null (sem infer├¬ncia)...
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:938:11)
+
+    console.log
+      Ô£à Fallback conclu├¡do: 1 apostas (0 BTTS adicionados)
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:981:11)
+
+    console.log
+      Apostas antes do buildMercado: [
+        {
+          tipo: 'match_prop',
+          estatistica: 'Empate Anula',
+          condicao: 'Inter',
+          jogador: null,
+          valor: null,
+          time: 'Inter',
+          timeAbrev: null,
+          periodo: 'Jogo',
+          confianca: 'media'
+        }
+      ]
+
+      at formatBilhete (src/pipeline/formatterFinal.ts:150:11)
+
+    console.log
+      [resultado] Empate Anula Inter match_prop Empate Anula Inter Inter
+
+      at testResultadoCluster (src/tests/resultadoCluster.spec.ts:14:13)
+
+    console.log
+      USANDO TICKET LLM: true
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1140:11)
+
+    console.log
+      Apostas Extra├¡das do LLM: []
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1191:13)
+
+    console.log
+      [PIPELINE] Apostas finais antes do fallback: 1
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1387:13)
+
+    console.log
+      ­ƒÅù´©Å FALLBACK: Preenchendo campos null (sem infer├¬ncia)...
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:938:11)
+
+    console.log
+      Ô£à Fallback conclu├¡do: 1 apostas (0 BTTS adicionados)
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:981:11)
+
+    console.log
+      Apostas antes do buildMercado: [
+        {
+          tipo: 'winner',
+          estatistica: 'Vencedor',
+          condicao: 'Juventus',
+          jogador: null,
+          valor: null,
+          time: 'Juventus',
+          timeAbrev: null,
+          periodo: 'Jogo',
+          confianca: 'alta'
+        }
+      ]
+
+      at formatBilhete (src/pipeline/formatterFinal.ts:150:11)
+
+    console.log
+      [resultado] Winner Juventus winner Vencedor Juventus Juventus
+
+      at testResultadoCluster (src/tests/resultadoCluster.spec.ts:14:13)
+
+PASS src/tests/enforcePlayerRule.spec.ts
+  ÔùÅ Console
+
+    console.log
+      Tipo corrigido: player_prop
+
+      at runSpec (src/tests/enforcePlayerRule.spec.ts:28:11)
+
+PASS src/tests/ui-labels-filter.test.ts
+  ÔùÅ Console
+
+    console.log
+      ­ƒöÑ­ƒöÑ­ƒöÑ NOVO NORMALIZE OCR EM EXECU├ç├âO ­ƒöÑ­ƒöÑ­ƒöÑ
+
+      at normalizeOcr (src/ocr/normalizeOcr.ts:357:11)
+
+    console.log
+      ­ƒöÑ­ƒöÑ­ƒöÑ NOVO NORMALIZE OCR EM EXECU├ç├âO ­ƒöÑ­ƒöÑ­ƒöÑ
+
+      at normalizeOcr (src/ocr/normalizeOcr.ts:357:11)
+
+    console.log
+      ­ƒöÑ­ƒöÑ­ƒöÑ NOVO NORMALIZE OCR EM EXECU├ç├âO ­ƒöÑ­ƒöÑ­ƒöÑ
+
+      at normalizeOcr (src/ocr/normalizeOcr.ts:357:11)
+
+    console.log
+      ­ƒöÑ­ƒöÑ­ƒöÑ NOVO NORMALIZE OCR EM EXECU├ç├âO ­ƒöÑ­ƒöÑ­ƒöÑ
+
+      at normalizeOcr (src/ocr/normalizeOcr.ts:357:11)
+
+    console.log
+      ­ƒöÑ­ƒöÑ­ƒöÑ NOVO NORMALIZE OCR EM EXECU├ç├âO ­ƒöÑ­ƒöÑ­ƒöÑ
+
+      at normalizeOcr (src/ocr/normalizeOcr.ts:357:11)
+
+    console.log
+      ­ƒöÑ­ƒöÑ­ƒöÑ NOVO NORMALIZE OCR EM EXECU├ç├âO ­ƒöÑ­ƒöÑ­ƒöÑ
+
+      at normalizeOcr (src/ocr/normalizeOcr.ts:357:11)
+
+PASS src/tests/nfl-teams.test.ts
+PASS src/tests/nfl-sport-detection.test.ts (6.119 s)
+FAIL src/tests/inter-liverpool-real-case.test.ts (6.269 s)
+  ÔùÅ Console
+
+    console.log
+      ÔÜá´©Å Ambiente de teste detectado. Usando MockLlmClient
+
+      at src/utils/llmClient.ts:334:13
+
+    console.log
+      ­ƒöÑ­ƒöÑ­ƒöÑ NOVO NORMALIZE OCR EM EXECU├ç├âO ­ƒöÑ­ƒöÑ­ƒöÑ
+
+      at normalizeOcr (src/ocr/normalizeOcr.ts:357:11)
+
+    console.log
+      ­ƒº¬ NORMALIZED LINES ÔåôÔåôÔåô
+
+      at processBilhete (src/pipeline/index.ts:24:11)
+
+    console.log
+      0 "Ambas equipes Marcam: Sim"
+
+      at src/pipeline/index.ts:26:13
+          at Array.forEach (<anonymous>)
+
+    console.log
+      1 "Total de Gols Mais/Menos: Mais de 3.5"
+
+      at src/pipeline/index.ts:26:13
+          at Array.forEach (<anonymous>)
+
+    console.log
+      2 "Super Odds Turbinadas"
+
+      at src/pipeline/index.ts:26:13
+          at Array.forEach (<anonymous>)
+
+    console.log
+      3 "Inter de Mil├úo - Liverpool"
+
+      at src/pipeline/index.ts:26:13
+          at Array.forEach (<anonymous>)
+
+    console.log
+      4 "09/12/2025 17:00"
+
+      at src/pipeline/index.ts:26:13
+          at Array.forEach (<anonymous>)
+
+    console.log
+      5 "Mais Detalhes"
+
+      at src/pipeline/index.ts:26:13
+          at Array.forEach (<anonymous>)
+
+    console.log
+      6 "Ganho Potencial R$18,98"
+
+      at src/pipeline/index.ts:26:13
+          at Array.forEach (<anonymous>)
+
+    console.log
+      7 "Odd 2.75 3.45"
+
+      at src/pipeline/index.ts:26:13
+          at Array.forEach (<anonymous>)
+
+    console.log
+      8 "Valor Apostado R$ 5,50"
+
+      at src/pipeline/index.ts:26:13
+          at Array.forEach (<anonymous>)
+
+    console.log
+      USANDO TICKET LLM: true
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1140:11)
+
+    console.log
+      Apostas Extra├¡das do LLM: [
+        {
+          "tipo": "match_prop",
+          "jogador": null,
+          "estatistica": "Gols Mais/Menos",
+          "condicao": "Mais de 3.5",
+          "valor": 3.5,
+          "time": null,
+          "timeAbrev": null,
+          "periodo": "Jogo",
+          "confianca": "alta"
+        }
+      ]
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1191:13)
+
+    console.log
+      [PIPELINE] Apostas finais antes do fallback: 2
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1387:13)
+
+    console.log
+      ­ƒÅù´©Å FALLBACK: Preenchendo campos null (sem infer├¬ncia)...
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:938:11)
+
+    console.log
+      Ô£à Fallback conclu├¡do: 2 apostas (0 BTTS adicionados)
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:981:11)
+
+    console.log
+      Apostas antes do buildMercado: [
+        {
+          tipo: 'match_prop',
+          jogador: null,
+          estatistica: 'Ambas Marcam',
+          condicao: 'Sim',
+          valor: null,
+          time: null,
+          timeAbrev: null,
+          periodo: 'Jogo',
+          confianca: 'alta'
+        },
+        {
+          tipo: 'match_prop',
+          jogador: null,
+          estatistica: 'Gols Mais/Menos',
+          condicao: 'Mais de 3.5',
+          valor: 3.5,
+          time: null,
+          timeAbrev: null,
+          periodo: 'Jogo',
+          confianca: 'alta'
+        }
+      ]
+
+      at formatBilhete (src/pipeline/formatterFinal.ts:150:11)
+
+    console.log
+      
+      ­ƒôè RESULTADO DO BILHETE:
+
+      at Object.<anonymous> (src/tests/inter-liverpool-real-case.test.ts:25:13)
+
+    console.log
+      Odd capturada: 3.45
+
+      at Object.<anonymous> (src/tests/inter-liverpool-real-case.test.ts:26:13)
+
+    console.log
+      Valor Apostado: 5.5
+
+      at Object.<anonymous> (src/tests/inter-liverpool-real-case.test.ts:27:13)
+
+    console.log
+      Retorno Potencial: 18.98
+
+      at Object.<anonymous> (src/tests/inter-liverpool-real-case.test.ts:28:13)
+
+    console.log
+      ­ƒöÑ­ƒöÑ­ƒöÑ NOVO NORMALIZE OCR EM EXECU├ç├âO ­ƒöÑ­ƒöÑ­ƒöÑ
+
+      at normalizeOcr (src/ocr/normalizeOcr.ts:357:11)
+
+    console.log
+      ­ƒº¬ NORMALIZED LINES ÔåôÔåôÔåô
+
+      at processBilhete (src/pipeline/index.ts:24:11)
+
+    console.log
+      0 "Liverpool - Arsenal"
+
+      at src/pipeline/index.ts:26:13
+          at Array.forEach (<anonymous>)
+
+    console.log
+      1 "Resultado Final: Liverpool"
+
+      at src/pipeline/index.ts:26:13
+          at Array.forEach (<anonymous>)
+
+    console.log
+      2 "Odd 2.10"
+
+      at src/pipeline/index.ts:26:13
+          at Array.forEach (<anonymous>)
+
+    console.log
+      3 "Aposta R$ 10,00"
+
+      at src/pipeline/index.ts:26:13
+          at Array.forEach (<anonymous>)
+
+    console.log
+      USANDO TICKET LLM: true
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1140:11)
+
+    console.log
+      Apostas Extra├¡das do LLM: []
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1191:13)
+
+    console.log
+      [PIPELINE] Apostas finais antes do fallback: 0
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1387:13)
+
+    console.log
+      ­ƒÅù´©Å FALLBACK: Preenchendo campos null (sem infer├¬ncia)...
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:938:11)
+
+    console.log
+      Apostas antes do buildMercado: []
+
+      at formatBilhete (src/pipeline/formatterFinal.ts:150:11)
+
+  ÔùÅ Caso Real: Inter de Mil├úo - Liverpool (Odd Alterada) ÔÇ║ Odd ├║nica n├úo ├® afetada pela mudan├ºa
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 2.1
+    Received: null
+
+      52 |
+      53 |     // Com uma ├║nica odd, deve funcionar normalmente
+    > 54 |     expect(result.odd).toBe(2.10);
+         |                        ^
+      55 |   });
+      56 | });
+      57 |
+
+      at Object.<anonymous> (src/tests/inter-liverpool-real-case.test.ts:54:24)
+
+PASS src/tests/consistency-inter-liverpool.test.ts (6.275 s)
+  ÔùÅ Console
+
+    console.log
+      ÔÜá´©Å Ambiente de teste detectado. Usando MockLlmClient
+
+      at src/utils/llmClient.ts:334:13
+
+    console.log
+      ­ƒöÑ­ƒöÑ­ƒöÑ NOVO NORMALIZE OCR EM EXECU├ç├âO ­ƒöÑ­ƒöÑ­ƒöÑ
+
+      at normalizeOcr (src/ocr/normalizeOcr.ts:357:11)
+
+    console.log
+      ­ƒº¬ NORMALIZED LINES ÔåôÔåôÔåô
+
+      at processBilhete (src/pipeline/index.ts:24:11)
+
+    console.log
+      0 "Ambas equipes Marcam: Sim"
+
+      at src/pipeline/index.ts:26:13
+          at Array.forEach (<anonymous>)
+
+    console.log
+      1 "Total de Gols Mais/Menos: Mais de 3.5"
+
+      at src/pipeline/index.ts:26:13
+          at Array.forEach (<anonymous>)
+
+    console.log
+      2 "Super Odds Turbinadas"
+
+      at src/pipeline/index.ts:26:13
+          at Array.forEach (<anonymous>)
+
+    console.log
+      3 "Inter de Mil├úo - Liverpool"
+
+      at src/pipeline/index.ts:26:13
+          at Array.forEach (<anonymous>)
+
+    console.log
+      4 "2.75 3.45"
+
+      at src/pipeline/index.ts:26:13
+          at Array.forEach (<anonymous>)
+
+    console.log
+      5 "09/12/202517:00"
+
+      at src/pipeline/index.ts:26:13
+          at Array.forEach (<anonymous>)
+
+    console.log
+      6 "Ganhos Potenciais"
+
+      at src/pipeline/index.ts:26:13
+          at Array.forEach (<anonymous>)
+
+    console.log
+      7 "R$5,50"
+
+      at src/pipeline/index.ts:26:13
+          at Array.forEach (<anonymous>)
+
+    console.log
+      8 "R$18,98"
+
+      at src/pipeline/index.ts:26:13
+          at Array.forEach (<anonymous>)
+
+    console.log
+      USANDO TICKET LLM: true
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1140:11)
+
+    console.log
+      Apostas Extra├¡das do LLM: [
+        {
+          "tipo": "match_prop",
+          "jogador": null,
+          "estatistica": "Gols Mais/Menos",
+          "condicao": "Mais de 3.5",
+          "valor": 3.5,
+          "time": null,
+          "timeAbrev": null,
+          "periodo": "Jogo",
+          "confianca": "alta"
+        }
+      ]
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1191:13)
+
+    console.log
+      [PIPELINE] Apostas finais antes do fallback: 2
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1387:13)
+
+    console.log
+      ­ƒÅù´©Å FALLBACK: Preenchendo campos null (sem infer├¬ncia)...
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:938:11)
+
+    console.log
+      Ô£à Fallback conclu├¡do: 2 apostas (0 BTTS adicionados)
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:981:11)
+
+    console.log
+      Apostas antes do buildMercado: [
+        {
+          tipo: 'match_prop',
+          jogador: null,
+          estatistica: 'Ambas Marcam',
+          condicao: 'Sim',
+          valor: null,
+          time: null,
+          timeAbrev: null,
+          periodo: 'Jogo',
+          confianca: 'alta'
+        },
+        {
+          tipo: 'match_prop',
+          jogador: null,
+          estatistica: 'Gols Mais/Menos',
+          condicao: 'Mais de 3.5',
+          valor: 3.5,
+          time: null,
+          timeAbrev: null,
+          periodo: 'Jogo',
+          confianca: 'alta'
+        }
+      ]
+
+      at formatBilhete (src/pipeline/formatterFinal.ts:150:11)
+
+    console.log
+      
+      Caso 1: Total de quebrado
+
+      at Object.<anonymous> (src/tests/consistency-inter-liverpool.test.ts:50:15)
+
+    console.log
+      Apostas: Ambas Marcam, Gols Mais/Menos
+
+      at Object.<anonymous> (src/tests/consistency-inter-liverpool.test.ts:51:15)
+
+    console.log
+      Odd: 3.45
+
+      at Object.<anonymous> (src/tests/consistency-inter-liverpool.test.ts:52:15)
+
+    console.log
+      ­ƒöÑ­ƒöÑ­ƒöÑ NOVO NORMALIZE OCR EM EXECU├ç├âO ­ƒöÑ­ƒöÑ­ƒöÑ
+
+      at normalizeOcr (src/ocr/normalizeOcr.ts:357:11)
+
+    console.log
+      ­ƒº¬ NORMALIZED LINES ÔåôÔåôÔåô
+
+      at processBilhete (src/pipeline/index.ts:24:11)
+
+    console.log
+      0 "Ambas equipes Marcam: Sim"
+
+      at src/pipeline/index.ts:26:13
+          at Array.forEach (<anonymous>)
+
+    console.log
+      1 "Total de Gols Mais/Menos: Mais de 3.5"
+
+      at src/pipeline/index.ts:26:13
+          at Array.forEach (<anonymous>)
+
+    console.log
+      2 "Super Odds Turbinadas"
+
+      at src/pipeline/index.ts:26:13
+          at Array.forEach (<anonymous>)
+
+    console.log
+      3 "Inter de Mil├úo - Liverpool"
+
+      at src/pipeline/index.ts:26:13
+          at Array.forEach (<anonymous>)
+
+    console.log
+      4 "Odd 2.75 3.45"
+
+      at src/pipeline/index.ts:26:13
+          at Array.forEach (<anonymous>)
+
+    console.log
+      5 "09/12/2025 17:00"
+
+      at src/pipeline/index.ts:26:13
+          at Array.forEach (<anonymous>)
+
+    console.log
+      USANDO TICKET LLM: true
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1140:11)
+
+    console.log
+      Apostas Extra├¡das do LLM: [
+        {
+          "tipo": "match_prop",
+          "jogador": null,
+          "estatistica": "Gols Mais/Menos",
+          "condicao": "Mais de 3.5",
+          "valor": 3.5,
+          "time": null,
+          "timeAbrev": null,
+          "periodo": "Jogo",
+          "confianca": "alta"
+        }
+      ]
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1191:13)
+
+    console.log
+      [PIPELINE] Apostas finais antes do fallback: 2
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1387:13)
+
+    console.log
+      ­ƒÅù´©Å FALLBACK: Preenchendo campos null (sem infer├¬ncia)...
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:938:11)
+
+    console.log
+      Ô£à Fallback conclu├¡do: 2 apostas (0 BTTS adicionados)
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:981:11)
+
+    console.log
+      Apostas antes do buildMercado: [
+        {
+          tipo: 'match_prop',
+          jogador: null,
+          estatistica: 'Ambas Marcam',
+          condicao: 'Sim',
+          valor: null,
+          time: null,
+          timeAbrev: null,
+          periodo: 'Jogo',
+          confianca: 'alta'
+        },
+        {
+          tipo: 'match_prop',
+          jogador: null,
+          estatistica: 'Gols Mais/Menos',
+          condicao: 'Mais de 3.5',
+          valor: 3.5,
+          time: null,
+          timeAbrev: null,
+          periodo: 'Jogo',
+          confianca: 'alta'
+        }
+      ]
+
+      at formatBilhete (src/pipeline/formatterFinal.ts:150:11)
+
+    console.log
+      
+      Caso 2: Linha com Odd isolada
+
+      at Object.<anonymous> (src/tests/consistency-inter-liverpool.test.ts:50:15)
+
+    console.log
+      Apostas: Ambas Marcam, Gols Mais/Menos
+
+      at Object.<anonymous> (src/tests/consistency-inter-liverpool.test.ts:51:15)
+
+    console.log
+      Odd: null
+
+      at Object.<anonymous> (src/tests/consistency-inter-liverpool.test.ts:52:15)
+
+    console.log
+      ­ƒöÑ­ƒöÑ­ƒöÑ NOVO NORMALIZE OCR EM EXECU├ç├âO ­ƒöÑ­ƒöÑ­ƒöÑ
+
+      at normalizeOcr (src/ocr/normalizeOcr.ts:357:11)
+
+    console.log
+      ­ƒº¬ NORMALIZED LINES ÔåôÔåôÔåô
+
+      at processBilhete (src/pipeline/index.ts:24:11)
+
+    console.log
+      0 "Ambas equipes Marcam: Sim"
+
+      at src/pipeline/index.ts:26:13
+          at Array.forEach (<anonymous>)
+
+    console.log
+      1 "Total de Gols Mais/Menos: Mais de 3.5"
+
+      at src/pipeline/index.ts:26:13
+          at Array.forEach (<anonymous>)
+
+    console.log
+      2 "Super Odds Turbinadas"
+
+      at src/pipeline/index.ts:26:13
+          at Array.forEach (<anonymous>)
+
+    console.log
+      3 "Inter de Mil├úo - Liverpool"
+
+      at src/pipeline/index.ts:26:13
+          at Array.forEach (<anonymous>)
+
+    console.log
+      4 "2.75 3.45"
+
+      at src/pipeline/index.ts:26:13
+          at Array.forEach (<anonymous>)
+
+    console.log
+      5 "09/12/2025 17:00"
+
+      at src/pipeline/index.ts:26:13
+          at Array.forEach (<anonymous>)
+
+    console.log
+      USANDO TICKET LLM: true
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1140:11)
+
+    console.log
+      Apostas Extra├¡das do LLM: [
+        {
+          "tipo": "match_prop",
+          "jogador": null,
+          "estatistica": "Gols Mais/Menos",
+          "condicao": "Mais de 3.5",
+          "valor": 3.5,
+          "time": null,
+          "timeAbrev": null,
+          "periodo": "Jogo",
+          "confianca": "alta"
+        }
+      ]
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1191:13)
+
+    console.log
+      [PIPELINE] Apostas finais antes do fallback: 2
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1387:13)
+
+    console.log
+      ­ƒÅù´©Å FALLBACK: Preenchendo campos null (sem infer├¬ncia)...
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:938:11)
+
+    console.log
+      Ô£à Fallback conclu├¡do: 2 apostas (0 BTTS adicionados)
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:981:11)
+
+    console.log
+      Apostas antes do buildMercado: [
+        {
+          tipo: 'match_prop',
+          jogador: null,
+          estatistica: 'Ambas Marcam',
+          condicao: 'Sim',
+          valor: null,
+          time: null,
+          timeAbrev: null,
+          periodo: 'Jogo',
+          confianca: 'alta'
+        },
+        {
+          tipo: 'match_prop',
+          jogador: null,
+          estatistica: 'Gols Mais/Menos',
+          condicao: 'Mais de 3.5',
+          valor: 3.5,
+          time: null,
+          timeAbrev: null,
+          periodo: 'Jogo',
+          confianca: 'alta'
+        }
+      ]
+
+      at formatBilhete (src/pipeline/formatterFinal.ts:150:11)
+
+    console.log
+      
+      Caso 3: Tudo em uma linha
+
+      at Object.<anonymous> (src/tests/consistency-inter-liverpool.test.ts:50:15)
+
+    console.log
+      Apostas: Ambas Marcam, Gols Mais/Menos
+
+      at Object.<anonymous> (src/tests/consistency-inter-liverpool.test.ts:51:15)
+
+    console.log
+      Odd: null
+
+      at Object.<anonymous> (src/tests/consistency-inter-liverpool.test.ts:52:15)
+
+PASS src/tests/winner-trigger-validation.test.ts (6.414 s)
+  ÔùÅ Console
+
+    console.log
+      ÔÜá´©Å Ambiente de teste detectado. Usando MockLlmClient
+
+      at src/utils/llmClient.ts:334:13
+
+    console.log
+      USANDO TICKET LLM: true
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1140:11)
+
+    console.log
+      Apostas Extra├¡das do LLM: []
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1191:13)
+
+    console.log
+      [PIPELINE] Apostas finais antes do fallback: 2
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1387:13)
+
+    console.log
+      ­ƒÅù´©Å FALLBACK: Preenchendo campos null (sem infer├¬ncia)...
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:938:11)
+
+    console.log
+      Ô£à Fallback conclu├¡do: 2 apostas (0 BTTS adicionados)
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:981:11)
+
+    console.log
+      Apostas antes do buildMercado: [
+        {
+          tipo: 'player_prop',
+          jogador: 'Julius Randle',
+          estatistica: 'Rebotes',
+          condicao: '10+',
+          valor: 10,
+          time: null,
+          timeAbrev: null,
+          periodo: 'Jogo',
+          confianca: 'alta'
+        },
+        {
+          tipo: 'player_prop',
+          jogador: 'Julius Randle',
+          estatistica: 'Pontos',
+          condicao: '10+',
+          valor: 10,
+          time: null,
+          timeAbrev: null,
+          periodo: 'Jogo',
+          confianca: 'alta'
+        }
+      ]
+
+      at formatBilhete (src/pipeline/formatterFinal.ts:150:11)
+
+    console.log
+      USANDO TICKET LLM: true
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1140:11)
+
+    console.log
+      Apostas Extra├¡das do LLM: []
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1191:13)
+
+    console.log
+      [PIPELINE] Apostas finais antes do fallback: 1
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1387:13)
+
+    console.log
+      ­ƒÅù´©Å FALLBACK: Preenchendo campos null (sem infer├¬ncia)...
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:938:11)
+
+    console.log
+      Ô£à Fallback conclu├¡do: 1 apostas (0 BTTS adicionados)
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:981:11)
+
+    console.log
+      Apostas antes do buildMercado: [
+        {
+          tipo: 'match_prop',
+          estatistica: 'Total Gols',
+          condicao: 'Mais de 2.5',
+          jogador: null,
+          valor: null,
+          time: null,
+          timeAbrev: null,
+          periodo: 'Jogo',
+          confianca: 'media'
+        }
+      ]
+
+      at formatBilhete (src/pipeline/formatterFinal.ts:150:11)
+
+    console.log
+      USANDO TICKET LLM: true
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1140:11)
+
+    console.log
+      Apostas Extra├¡das do LLM: []
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1191:13)
+
+    console.log
+      [PIPELINE] Apostas finais antes do fallback: 0
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1387:13)
+
+    console.log
+      ­ƒÅù´©Å FALLBACK: Preenchendo campos null (sem infer├¬ncia)...
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:938:11)
+
+    console.log
+      Apostas antes do buildMercado: []
+
+      at formatBilhete (src/pipeline/formatterFinal.ts:150:11)
+
+    console.log
+      USANDO TICKET LLM: true
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1140:11)
+
+    console.log
+      Apostas Extra├¡das do LLM: []
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1191:13)
+
+    console.log
+      [PIPELINE] Apostas finais antes do fallback: 0
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1387:13)
+
+    console.log
+      ­ƒÅù´©Å FALLBACK: Preenchendo campos null (sem infer├¬ncia)...
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:938:11)
+
+    console.log
+      Apostas antes do buildMercado: []
+
+      at formatBilhete (src/pipeline/formatterFinal.ts:150:11)
+
+    console.log
+      USANDO TICKET LLM: true
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1140:11)
+
+    console.log
+      Apostas Extra├¡das do LLM: []
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1191:13)
+
+    console.log
+      [PIPELINE] Apostas finais antes do fallback: 0
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1387:13)
+
+    console.log
+      ­ƒÅù´©Å FALLBACK: Preenchendo campos null (sem infer├¬ncia)...
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:938:11)
+
+    console.log
+      Apostas antes do buildMercado: []
+
+      at formatBilhete (src/pipeline/formatterFinal.ts:150:11)
+
+    console.log
+      USANDO TICKET LLM: true
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1140:11)
+
+    console.log
+      Apostas Extra├¡das do LLM: []
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1191:13)
+
+    console.log
+      [PIPELINE] Apostas finais antes do fallback: 3
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1387:13)
+
+    console.log
+      ­ƒÅù´©Å FALLBACK: Preenchendo campos null (sem infer├¬ncia)...
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:938:11)
+
+    console.log
+      Ô£à Fallback conclu├¡do: 3 apostas (0 BTTS adicionados)
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:981:11)
+
+    console.log
+      Apostas antes do buildMercado: [
+        {
+          tipo: 'player_prop',
+          jogador: 'LeBron James',
+          estatistica: 'Pontos',
+          condicao: '25+',
+          valor: 25,
+          time: null,
+          timeAbrev: null,
+          periodo: 'Jogo',
+          confianca: 'alta'
+        },
+        {
+          tipo: 'player_prop',
+          jogador: 'Stephen Curry',
+          estatistica: 'Assist├¬ncias',
+          condicao: '5+',
+          valor: 5,
+          time: null,
+          timeAbrev: null,
+          periodo: 'Jogo',
+          confianca: 'alta'
+        },
+        {
+          tipo: 'player_prop',
+          jogador: 'Anthony Davis',
+          estatistica: 'Rebotes',
+          condicao: '10+',
+          valor: 10,
+          time: null,
+          timeAbrev: null,
+          periodo: 'Jogo',
+          confianca: 'alta'
+        }
+      ]
+
+      at formatBilhete (src/pipeline/formatterFinal.ts:150:11)
+
+    console.log
+      USANDO TICKET LLM: true
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1140:11)
+
+    console.log
+      Apostas Extra├¡das do LLM: []
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1191:13)
+
+    console.log
+      [PIPELINE] Apostas finais antes do fallback: 2
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1387:13)
+
+    console.log
+      ­ƒÅù´©Å FALLBACK: Preenchendo campos null (sem infer├¬ncia)...
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:938:11)
+
+    console.log
+      Ô£à Fallback conclu├¡do: 2 apostas (0 BTTS adicionados)
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:981:11)
+
+    console.log
+      Apostas antes do buildMercado: [
+        {
+          tipo: 'player_prop',
+          jogador: 'Julius Randle',
+          estatistica: 'Rebotes',
+          condicao: '10+',
+          valor: 10,
+          time: null,
+          timeAbrev: null,
+          periodo: 'Jogo',
+          confianca: 'alta'
+        },
+        {
+          tipo: 'player_prop',
+          jogador: 'Julius Randle',
+          estatistica: 'Pontos',
+          condicao: '10+',
+          valor: 10,
+          time: null,
+          timeAbrev: null,
+          periodo: 'Jogo',
+          confianca: 'alta'
+        }
+      ]
+
+      at formatBilhete (src/pipeline/formatterFinal.ts:150:11)
+
+    console.log
+      USANDO TICKET LLM: true
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1140:11)
+
+    console.log
+      Apostas Extra├¡das do LLM: []
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1191:13)
+
+    console.log
+      [PIPELINE] Apostas finais antes do fallback: 1
+
+      at semanticTicketLLM (src/pipeline/semanticTicketLLM.ts:1387:13)
+
+    console.log
+      ­ƒÅù´©Å FALLBACK: Preenchendo campos null (sem infer├¬ncia)...
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:938:11)
+
+    console.log
+      Ô£à Fallback conclu├¡do: 1 apostas (0 BTTS adicionados)
+
+      at applyDeterministicFallback (src/pipeline/semanticTicketLLM.ts:981:11)
+
+    console.log
+      Apostas antes do buildMercado: [
+        {
+          tipo: 'match_prop',
+          estatistica: 'Total Gols',
+          condicao: 'Mais de 2.5',
+          jogador: null,
+          valor: null,
+          time: null,
+          timeAbrev: null,
+          periodo: 'Jogo',
+          confianca: 'media'
+        }
+      ]
+
+      at formatBilhete (src/pipeline/formatterFinal.ts:150:11)
+
+
+Summary of all failing tests
+FAIL src/tests/inter-liverpool-real-case.test.ts (6.269 s)
+  ÔùÅ Caso Real: Inter de Mil├úo - Liverpool (Odd Alterada) ÔÇ║ Odd ├║nica n├úo ├® afetada pela mudan├ºa
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 2.1
+    Received: null
+
+      52 |
+      53 |     // Com uma ├║nica odd, deve funcionar normalmente
+    > 54 |     expect(result.odd).toBe(2.10);
+         |                        ^
+      55 |   });
+      56 | });
+      57 |
+
+      at Object.<anonymous> (src/tests/inter-liverpool-real-case.test.ts:54:24)
+
+
+Test Suites: 1 failed, 21 passed, 22 total
+Tests:       1 failed, 2 skipped, 162 passed, 165 total
+Snapshots:   17 passed, 17 total
+Time:        8.006 s
+Ran all test suites.

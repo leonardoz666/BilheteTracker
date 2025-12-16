@@ -1,0 +1,161 @@
+name: Deploy para Produção
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: # Permite trigger manual
+
+env:
+  NODE_VERSION: '20.x'
+
+jobs:
+  # INATIVO: Deploy BackTrack no Render
+  # Render já faz deploy automático ao detectar push
+  # Descomente para usar webhooks de deploy manual
+  # deploy-backtrack:
+  #   name: Deploy BackTrack (Render)
+  #   runs-on: ubuntu-latest
+  #   environment: production
+  #   
+  #   steps:
+  #     - name: Checkout código
+  #       uses: actions/checkout@v4
+  #
+  #     - name: Trigger Render Deploy
+  #       run: |
+  #         curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_BACKTRACK }}
+  #         echo "Deploy do BackTrack iniciado no Render"
+  #
+  #     - name: Aguardar deploy (60s)
+  #       run: sleep 60
+  #
+  #     - name: Health check
+  #       run: |
+  #         for i in {1..5}; do
+  #           if curl -f -s https://backtrack-api.onrender.com/health; then
+  #             echo "✅ BackTrack está saudável!"
+  #             exit 0
+  #           fi
+  #           echo "Tentativa $i/5 falhou, aguardando 15s..."
+  #           sleep 15
+  #         done
+  #         echo "❌ Health check falhou após 5 tentativas"
+  #         exit 1
+
+  # INATIVO: Deploy RealTrack na Vercel
+  # Vercel já faz deploy automático ao detectar push
+  # Descomente para usar deploy manual via token
+  # deploy-realtrack:
+  # deploy-realtrack:
+  #   name: Deploy RealTrack (Vercel)
+  #   runs-on: ubuntu-latest
+  #   environment: production
+  #   defaults:
+  #     run:
+  #       working-directory: ./RealTrack
+  #   
+  #   steps:
+  #     - name: Checkout código
+  #       uses: actions/checkout@v4
+  #
+  #     - name: Setup Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: ${{ env.NODE_VERSION }}
+  #
+  #     - name: Instalar Vercel CLI
+  #       run: npm install -g vercel@latest
+  #
+  #     - name: Pull Vercel Environment Information
+  #       run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+  #
+  #     - name: Build Project Artifacts
+  #       run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+  #
+  #     - name: Deploy Project Artifacts to Vercel
+  #       run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+  # INATIVO: Deploy bilhete-tracker no Render
+  # Render já faz deploy automático ao detectar push
+  # Descomente para usar webhooks de deploy manual
+  # deploy-bilhete-tracker:
+  # deploy-bilhete-tracker:
+  #   name: Deploy bilhete-tracker (Render)
+  #   runs-on: ubuntu-latest
+  #   environment: production
+  #   
+  #   steps:
+  #     - name: Checkout código
+  #       uses: actions/checkout@v4
+  #
+  #     - name: Trigger Render Deploy
+  #       run: |
+  #         curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK_BILHETE_TRACKER }}
+  #         echo "Deploy do bilhete-tracker iniciado no Render"
+  #
+  #     - name: Aguardar deploy (60s)
+  #       run: sleep 60
+  #
+  #     - name: Health check
+  #       run: |
+  #         for i in {1..5}; do
+  #           if curl -f -s https://bilhete-tracker.onrender.com/health || curl -f -s https://bilhete-tracker.onrender.com/; then
+  #             echo "✅ bilhete-tracker está saudável!"
+  #             exit 0
+  #           fi
+  #           echo "Tentativa $i/5 falhou, aguardando 15s..."
+  #           sleep 15
+  #         done
+  #         echo "❌ Health check falhou após 5 tentativas"
+  #         exit 1
+
+  # INATIVO: Notificações de deploy (ativa quando tiver secrets configurados)
+  # notify-deploy:
+  # notify-deploy:
+  #   name: Notificar Deploy Completo
+  #   runs-on: ubuntu-latest
+  #   needs: [deploy-backtrack, deploy-realtrack, deploy-bilhete-tracker]
+  #   if: success()
+  #   
+  #   steps:
+  #     - name: Enviar notificação Telegram
+  #       uses: appleboy/telegram-action@master
+  #       with:
+  #         to: ${{ secrets.TELEGRAM_CHAT_ID }}
+  #         token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+  #         message: |
+  #           🚀 Deploy em produção completo!
+  #           
+  #           ✅ BackTrack: https://backtrack-api.onrender.com
+  #           ✅ RealTrack: https://realtrack.vercel.app
+  #           ✅ bilhete-tracker: https://bilhete-tracker.onrender.com
+  #           
+  #           Commit: ${{ github.sha }}
+  #           Autor: ${{ github.actor }}
+  #           Data: ${{ github.event.head_commit.timestamp }}
+
+  # INATIVO: Rollback automático (ativa quando necessário)
+  # rollback:
+  # rollback:
+  #   name: Rollback Automático
+  #   runs-on: ubuntu-latest
+  #   needs: [deploy-backtrack, deploy-realtrack, deploy-bilhete-tracker]
+  #   if: failure()
+  #   
+  #   steps:
+  #     - name: Notificar falha no deploy
+  #       uses: appleboy/telegram-action@master
+  #       with:
+  #         to: ${{ secrets.TELEGRAM_CHAT_ID }}
+  #         token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+  #         message: |
+  #           ❌ DEPLOY FALHOU!
+  #           
+  #           Repositório: ${{ github.repository }}
+  #           Branch: main
+  #           Commit: ${{ github.sha }}
+  #           Autor: ${{ github.actor }}
+  #           
+  #           ⚠️ Considere fazer rollback manual se necessário.
+  #           
+  #           Logs: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}

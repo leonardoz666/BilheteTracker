@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "esnext",
+    "lib": ["ES2022"],
+    "moduleResolution": "node",
+    "types": ["node"],
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true
+  },
+  "include": ["src/**/*"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "src/**/*.test.ts",
+    "src/tests/**",
+    "src/**/__tests__/**",
+    // Rota antiga que importava diretamente o pacote bilhete-tracker.
+    // O fluxo atual usa o microserviço HTTP via BILHETE_TRACKER_URL,
+    // então este arquivo não precisa ser compilado.
+    "src/routes/bilheteTracker.routes.ts"
+  ]
+}

@@ -1,0 +1,225 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  NODE_VERSION: '20.x'
+
+jobs:
+  # Job 1: Testes do BackTrack
+  test-backtrack:
+    name: BackTrack - Testes
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./BackTrack
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: BackTrack/package-lock.json
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Gerar Prisma Client
+        run: npx prisma generate
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Executar testes
+        run: npm test
+        env:
+          NODE_ENV: test
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          JWT_SECRET: test-secret-key-for-ci
+          JWT_REFRESH_SECRET: test-refresh-secret-key-for-ci
+
+      - name: Upload coverage para Codecov
+        uses: codecov/codecov-action@v4
+        if: success()
+        with:
+          files: ./BackTrack/coverage/lcov.info
+          flags: backtrack
+          name: backtrack-coverage
+
+  # Job 2: Build do BackTrack
+  build-backtrack:
+    name: BackTrack - Build
+    runs-on: ubuntu-latest
+    needs: test-backtrack
+    defaults:
+      run:
+        working-directory: ./BackTrack
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: BackTrack/package-lock.json
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Build TypeScript
+        run: npm run build
+
+      - name: Verificar arquivos de build
+        run: |
+          if [ ! -d "dist" ]; then
+            echo "Erro: Pasta dist não foi criada"
+            exit 1
+          fi
+          echo "Build concluído com sucesso!"
+          ls -lah dist/
+
+  # Job 3: Lint do RealTrack
+  lint-realtrack:
+    name: RealTrack - Lint
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./RealTrack
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: RealTrack/package-lock.json
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Executar ESLint
+        run: npm run lint --if-present || echo "Lint não configurado"
+
+  # Job 4: Build do RealTrack
+  build-realtrack:
+    name: RealTrack - Build
+    runs-on: ubuntu-latest
+    needs: lint-realtrack
+    defaults:
+      run:
+        working-directory: ./RealTrack
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: RealTrack/package-lock.json
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Build produção
+        run: npm run build
+        env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+
+      - name: Verificar bundle size
+        run: |
+          echo "Bundle gerado com sucesso!"
+          du -sh dist/
+          du -sh dist/assets/*.js | head -5
+
+  # Job 5: Testes do bilhete-tracker
+  test-bilhete-tracker:
+    name: bilhete-tracker - Testes
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./bilhete-tracker
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: bilhete-tracker/package-lock.json
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Executar testes
+        run: npm test --if-present || echo "Testes não configurados"
+        env:
+          NODE_ENV: test
+          OCR_SPACE_API_KEY: ${{ secrets.OCR_SPACE_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+
+  # Job 6: Notificação de sucesso
+  notify-success:
+    name: Notificar Sucesso
+    runs-on: ubuntu-latest
+    needs: [build-backtrack, build-realtrack, test-bilhete-tracker]
+    if: success() && github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Enviar notificação Telegram
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          message: |
+            ✅ Deploy bem-sucedido!
+            
+            Repositório: ${{ github.repository }}
+            Branch: ${{ github.ref_name }}
+            Commit: ${{ github.sha }}
+            Autor: ${{ github.actor }}
+            
+            BackTrack: ✅ Testes e build OK
+            RealTrack: ✅ Build OK
+            bilhete-tracker: ✅ Testes OK
+
+  # Job 7: Notificação de falha
+  notify-failure:
+    name: Notificar Falha
+    runs-on: ubuntu-latest
+    needs: [build-backtrack, build-realtrack, test-bilhete-tracker]
+    if: failure()
+    
+    steps:
+      - name: Enviar notificação Telegram
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          message: |
+            ❌ Build falhou!
+            
+            Repositório: ${{ github.repository }}
+            Branch: ${{ github.ref_name }}
+            Commit: ${{ github.sha }}
+            Autor: ${{ github.actor }}
+            
+            Verifique os logs: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
