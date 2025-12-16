@@ -11,7 +11,7 @@ import { NormalizationInput, BilheteFinal } from "./schema/bilhete.schema";
 import { callOcrSpaceByUrl } from "./utils/ocrClient";
 import { createGroqLlmClient } from "./utils/groqLlmClient";
 import { normalizeOcr } from "./ocr/normalizeOcr";
-import { globalTicketCache, TicketCache } from "./utils/ticketCache";
+import { globalTicketCache, TicketCache, PARSER_VERSION } from "./utils/ticketCache";
 import crypto from "crypto";
 import fetch from "node-fetch";
 
@@ -93,22 +93,27 @@ export async function processBilheteFromImageUrl(
   let imageBuffer: Buffer | null = null;
   let imageHash: string | null = null;
 
+  console.log(`[PARSER v${PARSER_VERSION}] Iniciando processamento de bilhete...`);
+
   // Se cache está habilitado, baixa a imagem e calcula o hash
+  // IMPORTANTE: Hash é calculado do CONTEÚDO da imagem, não da URL
+  // Isso garante que se a mesma URL tiver imagens diferentes, o cache será invalidado
   if (shouldUseCache) {
     try {
       const imageRes = await fetch(imageUrl);
       if (imageRes.ok) {
         imageBuffer = await imageRes.buffer();
+        // Hash baseado no CONTEÚDO (buffer) da imagem, não na URL
         imageHash = TicketCache.hashImageBuffer(imageBuffer);
 
         // Tenta recuperar do cache
         const cached = globalTicketCache.get(imageHash);
         if (cached) {
-          console.log(`✅ [CACHE HIT] Bilhete recuperado do cache para hash ${imageHash.substring(0, 8)}...`);
+          console.log(`✅ [CACHE HIT v${PARSER_VERSION}] Bilhete recuperado do cache para hash ${imageHash.substring(0, 8)}...`);
           return cached;
         }
 
-        console.log(`📝 [CACHE MISS] Hash ${imageHash.substring(0, 8)}... não encontrado no cache. Processando...`);
+        console.log(`📝 [CACHE MISS v${PARSER_VERSION}] Hash ${imageHash.substring(0, 8)}... não encontrado no cache. Processando...`);
       }
     } catch (err) {
       console.warn(`⚠️  Falha ao baixar imagem para cache: ${String(err)}. Continuando sem cache...`);

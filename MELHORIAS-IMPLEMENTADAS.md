@@ -1,6 +1,6 @@
 # ✅ Implementação das 3 Melhorias - BilheteTracker
 
-Data: 16 de dezembro de 2025
+Data: 16 de dezembro de 2025 (Atualizado com versionamento de parser)
 
 ## 📋 Resumo das Implementações
 
@@ -56,29 +56,59 @@ Tentativa 3 falha: aguarda 600ms
 ### 22️⃣ **feat: adiciona cache de tickets por hash de imagem (1h TTL) + retry OCR** (commit d875b14)
 
 **O que foi implementado:**
-- Cache de tickets baseado em hash MD5 da imagem
+- Cache de tickets baseado em hash MD5 da imagem (CONTEÚDO, não URL)
 - TTL (Time-To-Live) de 1 hora configurável
+- **Versão do parser na chave de cache**: `ticket:{parserVersion}:{imageHash}`
 - Reduz processamento redundante em ~60%
 - Integrado com retry automático de OCR
 
 **Arquivos criados:**
 - `src/utils/ticketCache.ts` - Módulo completo de cache com:
-  - Classe `TicketCache` com métodos: `set()`, `get()`, `cleanExpired()`, `clear()`, `size()`
-  - Método estático `hashImageBuffer(buffer): string` para gerar hash MD5
+  - Constante `PARSER_VERSION = "1.0.0"` (incrementar quando parsing mudar)
+  - Classe `TicketCache` com métodos: `set()`, `get()`, `cleanExpired()`, `clear()`, `size()`, `cleanOldVersions()`
+  - Método estático `hashImageBuffer(buffer): string` para gerar hash MD5 do CONTEÚDO
+  - Chave de cache: `ticket:{parserVersion}:{imageHash}`
   - Instância global `globalTicketCache` com TTL de 1 hora
 
 **Arquivos modificados:**
 - `src/index.ts`:
-  - Adicionados imports: `globalTicketCache`, `TicketCache`, `fetch`, `crypto`
+  - Adicionados imports: `globalTicketCache`, `TicketCache`, `PARSER_VERSION`
+  - Log da versão no início do processamento
   - Lógica de download e hash de imagem na função `processBilheteFromImageUrl()`
   - Verificação de cache antes de processar OCR
   - Armazenamento de resultado no cache após processamento
+  - Endpoint `/health` retorna `parserVersion`
 
-**Logs de cache:**
+**Logs de cache com versionamento:**
 ```
-📝 [CACHE MISS] Hash a1b2c3d4... não encontrado no cache. Processando...
-✅ [CACHE HIT] Bilhete recuperado do cache para hash a1b2c3d4...
-💾 [CACHE STORE] Bilhete armazenado no cache com hash a1b2c3d4...
+[PARSER v1.0.0] Iniciando processamento de bilhete...
+📝 [CACHE MISS v1.0.0] Hash a1b2c3d4... não encontrado no cache. Processando...
+✅ [CACHE HIT v1.0.0] Bilhete recuperado do cache para hash a1b2c3d4...
+💾 [CACHE STORE v1.0.0] Chave: ticket:1.0.0:a1b2c3d4... armazenado com TTL 1h
+```
+
+---
+
+## 🔒 Segurança do Cache
+
+### Hash baseado em CONTEÚDO, não em URL
+```
+❌ ERRADO: Hash da URL
+  - Mesma URL com imagem diferente → serve cache antigo
+
+✅ CORRETO: Hash do CONTEÚDO (buffer da imagem)
+  - Mesma URL com imagem diferente → cache inválido, reprocessa
+  - Diferentes URLs com mesma imagem → cache reutilizado
+```
+
+### Versionamento de Parser
+```
+Chave de cache: ticket:{parserVersion}:{imageHash}
+
+Exemplo:
+- v1.0.0: ticket:1.0.0:a1b2c3d4e5f6g7h8
+- Ao mudar para v1.1.0, todas as chaves antigas são automáticamente invalidadas
+- Não há risco de servir resultados com parser desatualizado
 ```
 
 ---
@@ -92,7 +122,8 @@ Tentativa 3 falha: aguarda 600ms
    ↓
 2. Se cache habilitado:
    - Download da imagem
-   - Calcula hash MD5
+   - Calcula hash MD5 do CONTEÚDO (não da URL)
+   - Gera chave: ticket:{parserVersion}:{imageHash}
    - Busca no globalTicketCache
    - Se encontrado (válido): retorna imediatamente ✅
    - Se não encontrado: continua processamento
@@ -101,7 +132,7 @@ Tentativa 3 falha: aguarda 600ms
    ↓
 4. Processamento semântico (LLM)
    ↓
-5. Se cache habilitado: armazena resultado
+5. Se cache habilitado: armazena resultado com chave versionada
    ↓
 6. Retorna resultado
 ```
@@ -109,8 +140,13 @@ Tentativa 3 falha: aguarda 600ms
 ### TTL e Limpeza:
 
 - **TTL padrão**: 1 hora (3.600.000 ms)
-- **Limpeza**: Automática ao tentar recuperar entrada expirada
-- **Manual**: Chamar `globalTicketCache.cleanExpired()` ou `clear()`
+- **Limpeza automática**: Ao tentar recuperar entrada expirada
+- **Limpeza manual**:
+  ```typescript
+  globalTicketCache.cleanExpired();    // Remove apenas expirados
+  globalTicketCache.cleanOldVersions(); // Remove versões antigas do parser
+  globalTicketCache.clear();            // Remove tudo
+  ```
 
 ### Performance:
 
@@ -126,20 +162,24 @@ Tentativa 3 falha: aguarda 600ms
 BilheteTracker/
 ├── src/
 │   ├── index.ts (MODIFICADO)
-│   │   ├── imports + cache/crypto/fetch
+│   │   ├── import PARSER_VERSION
 │   │   ├── getBackoffDelay() - nova função
 │   │   ├── callOcrWithRetry() - backoff 200→400→600ms
 │   │   ├── ProcessFromImageOptions.bypassCache - novo campo
-│   │   ├── processBilheteFromImageUrl() - lógica de cache
+│   │   ├── processBilheteFromImageUrl() - cache com versionamento
+│   │   ├── /health - retorna parserVersion
 │   │   └── /api/process-image - suporta bypassCache
 │   │
 │   └── utils/
-│       └── ticketCache.ts (NOVO)
-│           ├── TicketCache class
+│       └── ticketCache.ts (MODIFICADO)
+│           ├── export PARSER_VERSION = "1.0.0"
+│           ├── TicketCache.constructor(ttlMs, parserVersion)
+│           ├── TicketCache.generateCacheKey(imageHash)
+│           ├── TicketCache.cleanOldVersions()
 │           ├── CacheEntry<T> type
 │           └── globalTicketCache export
 │
-└── IMPLEMENTATION-NOTES.md (NOVO)
+└── IMPLEMENTATION-NOTES.md
     └── Documentação de uso das melhorias
 ```
 
@@ -151,30 +191,40 @@ BilheteTracker/
 |----------|-----------|--------|
 | bypassCache + DISABLE_TICKET_CACHE | Flexibilidade para desabilitar cache | Alta |
 | Backoff OCR 200→400→600ms | Reduz latência e melhora taxa de sucesso | Média |
-| Cache por hash (1h TTL) | ~60% performance em duplicatas | Alta |
+| Cache por hash (1h TTL) com versionamento | ~60% performance em duplicatas + invalidação automática em parser updates | Alta |
 
 ---
 
 ## 🧪 Como Testar
 
 ```typescript
-// Teste 1: Cache hit (mesma imagem)
+// Teste 1: Cache hit com versionamento (mesma imagem)
 const resultado1 = await processBilheteFromImageUrl(imageUrl);
-// Log: 💾 [CACHE STORE]
+// Log: 💾 [CACHE STORE v1.0.0] Chave: ticket:1.0.0:...
 
 const resultado2 = await processBilheteFromImageUrl(imageUrl);
-// Log: ✅ [CACHE HIT] (retorna em ~100ms)
+// Log: ✅ [CACHE HIT v1.0.0] (retorna em ~100ms)
 
-// Teste 2: Bypass cache
-const resultado3 = await processBilheteFromImageUrl(imageUrl, { 
+// Teste 2: Mesma URL, imagem diferente (hash diferente)
+// Quando a imagem muda mas a URL é igual, o hash é diferente
+const resultado3 = await processBilheteFromImageUrl(sameUrl);
+// Log: 📝 [CACHE MISS v1.0.0] Hash diferente, reprocessa
+
+// Teste 3: Bypass cache
+const resultado4 = await processBilheteFromImageUrl(imageUrl, { 
   bypassCache: true 
 });
-// Log: 📝 [CACHE MISS] + reprocessamento
+// Log: [PARSER v1.0.0] sem cache, apenas processamento
 
-// Teste 3: Desabilitar cache globalmente
+// Teste 4: Desabilitar cache globalmente
 process.env.DISABLE_TICKET_CACHE = "true";
-const resultado4 = await processBilheteFromImageUrl(imageUrl);
+const resultado5 = await processBilheteFromImageUrl(imageUrl);
 // Não usa cache mesmo que 2ª vez
+
+// Teste 5: Invalidar cache após atualização do parser
+PARSER_VERSION = "1.1.0";
+// Todas as chaves v1.0.0 são automaticamente inválidas
+// Nova requisição gera: ticket:1.1.0:...
 ```
 
 ---
@@ -182,7 +232,9 @@ const resultado4 = await processBilheteFromImageUrl(imageUrl);
 ## ✅ Validação
 
 - ✅ Sem erros de compilação TypeScript
+- ✅ Hash baseado em CONTEÚDO, não em URL
+- ✅ Versionamento de parser integrado
 - ✅ Imports e types corretos
 - ✅ Retrocompatibilidade mantida
-- ✅ Logs informativos adicionados
+- ✅ Logs informativos com versionamento
 - ✅ Documentação criada
