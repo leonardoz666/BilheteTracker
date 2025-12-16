@@ -435,6 +435,8 @@ export const FOOTBALL_CLUB_ALIASES: Record<string, string> = {
   "AC Milan": "AC Milan",
   Milan: "AC Milan",
   "Inter Milan": "Inter Milan",
+  "Inter de Milão": "Inter Milan",
+  "Inter Milano": "Inter Milan",
   Inter: "Inter Milan",
   "AS Roma": "AS Roma",
   Roma: "AS Roma",

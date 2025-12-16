@@ -79,6 +79,25 @@ function extractValorApostado(lines: string[]): { value: number | null; consumed
   return extractLabeledAmount(lines, labels);
 }
 
+// Keywords que indicam contexto de futebol
+const FOOTBALL_KEYWORDS = [
+  /\bgols?\b/i,
+  /\bchutes?\b/i,
+  /\bescanteios?\b/i,
+  /\bcart[õo]es?\b/i,
+  /\bdefesas?\b/i,
+  /\bplacar\b/i,
+  /\bpasses?\b/i,
+  /\bfalta?s?\b/i,
+  /\bimpedimentos?\b/i,
+  /\bpenalt[yi]s?\b/i,
+] as const;
+
+function hasFootballKeywords(lines: string[]): boolean {
+  const fullText = lines.join(' ').toLowerCase();
+  return FOOTBALL_KEYWORDS.some(keyword => keyword.test(fullText));
+}
+
 function extractEsporte(lines: string[]): { esporte: string | null; consumedIdx: number | null } {
   // Scoring por liga: mais específico primeiro (NBA > NFL > MLB) e requer pelo menos um hit forte
   const nbaScore = computeLeagueScore(lines, NBA_CURRENT_TEAMS, NBA_TEAM_ALIASES as any, "Basquete");
@@ -103,18 +122,29 @@ function extractEsporte(lines: string[]): { esporte: string | null; consumedIdx:
     return { esporte: best.name, consumedIdx: best.consumedIdx };
   }
 
-  // Fallback: times de futebol (dicionário) – menos específico
+  // Detecção de futebol: requer evidências positivas (times + keywords)
+  let footballTeamFound = false;
+  let footballLineIdx: number | null = null;
+  
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
     const words = line.split(/\s+/);
     for (const word of words) {
       if (normalizeFootballClub(word)) {
-        return { esporte: "Futebol", consumedIdx: i };
+        footballTeamFound = true;
+        if (footballLineIdx === null) footballLineIdx = i;
+        break;
       }
     }
-    if (normalizeFootballClub(line.trim())) {
-      return { esporte: "Futebol", consumedIdx: i };
+    if (!footballTeamFound && normalizeFootballClub(line.trim())) {
+      footballTeamFound = true;
+      if (footballLineIdx === null) footballLineIdx = i;
     }
+  }
+
+  // Gate de futebol: requer time E palavras-chave específicas
+  if (footballTeamFound && hasFootballKeywords(lines)) {
+    return { esporte: "Futebol", consumedIdx: footballLineIdx };
   }
   
   return { esporte: null, consumedIdx: null };
