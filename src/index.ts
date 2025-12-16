@@ -11,6 +11,9 @@ import { NormalizationInput, BilheteFinal } from "./schema/bilhete.schema";
 import { callOcrSpaceByUrl } from "./utils/ocrClient";
 import { createGroqLlmClient } from "./utils/groqLlmClient";
 import { normalizeOcr } from "./ocr/normalizeOcr";
+import { globalTicketCache, TicketCache } from "./utils/ticketCache";
+import crypto from "crypto";
+import fetch from "node-fetch";
 
 export { processBilhete, processBilheteWithClient } from "./pipeline";
 export * from "./schema/bilhete.schema";
@@ -18,9 +21,19 @@ export * from "./schema/bilhete.schema";
 export type ProcessFromImageOptions = {
   // Quando true, usa o MockLlmClient interno (nenhuma chamada externa ao Groq).
   useMockLlm?: boolean;
+  // Quando true, ignora cache e força reprocessamento de OCR + LLM
+  bypassCache?: boolean;
 };
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/**
+ * Calcula o delay com backoff exponencial: 200ms → 400ms → 600ms
+ */
+function getBackoffDelay(attempt: number): number {
+  const backoffMs = [200, 400, 600];
+  return backoffMs[Math.min(attempt - 1, backoffMs.length - 1)];
+}
 
 async function callOcrWithRetry(imageUrl: string, maxRetries = 3) {
   let lastError: unknown;
@@ -53,7 +66,9 @@ async function callOcrWithRetry(imageUrl: string, maxRetries = 3) {
       lastError = err;
       console.warn(`⚠️  OCR.space tentativa ${attempt}/${maxRetries} falhou: ${String(err)}`);
       if (attempt < maxRetries) {
-        await sleep(1200);
+        const backoffMs = getBackoffDelay(attempt);
+        console.log(`   Aguardando ${backoffMs}ms antes da próxima tentativa...`);
+        await sleep(backoffMs);
       }
     }
   }
@@ -66,38 +81,78 @@ async function callOcrWithRetry(imageUrl: string, maxRetries = 3) {
 // 2) Passa o JSON do OCR para o pipeline local
 // 3) Usa LLM (Groq) para parsing semântico das apostas
 // 4) Retorna o BilheteFinal pronto para o backend (ex.: BackTrack)
+// 5) Usa cache de tickets por hash de imagem (1h TTL) quando bypassCache=false
 export async function processBilheteFromImageUrl(
   imageUrl: string,
   options: ProcessFromImageOptions = {},
 ): Promise<BilheteFinal> {
+  // Verifica se deve usar cache (padrão: true, a menos que DISABLE_TICKET_CACHE=true ou bypassCache=true)
+  const disableCacheEnv = process.env.DISABLE_TICKET_CACHE?.toLowerCase() === "true";
+  const shouldUseCache = !disableCacheEnv && !options.bypassCache;
+
+  let imageBuffer: Buffer | null = null;
+  let imageHash: string | null = null;
+
+  // Se cache está habilitado, baixa a imagem e calcula o hash
+  if (shouldUseCache) {
+    try {
+      const imageRes = await fetch(imageUrl);
+      if (imageRes.ok) {
+        imageBuffer = await imageRes.buffer();
+        imageHash = TicketCache.hashImageBuffer(imageBuffer);
+
+        // Tenta recuperar do cache
+        const cached = globalTicketCache.get(imageHash);
+        if (cached) {
+          console.log(`✅ [CACHE HIT] Bilhete recuperado do cache para hash ${imageHash.substring(0, 8)}...`);
+          return cached;
+        }
+
+        console.log(`📝 [CACHE MISS] Hash ${imageHash.substring(0, 8)}... não encontrado no cache. Processando...`);
+      }
+    } catch (err) {
+      console.warn(`⚠️  Falha ao baixar imagem para cache: ${String(err)}. Continuando sem cache...`);
+    }
+  }
+
   // OcrClient é responsável por ler OCR_SPACE_API_KEY internamente.
   // Fazemos retry defensivo para contornar timeouts esporádicos do OCR.space (E101).
   const ocrResponse = await callOcrWithRetry(imageUrl, 3);
 
-   // Logs de diagnóstico para inspecionar o OCR bruto e o resultado
-   // imediato da normalização, antes de qualquer chamada ao LLM.
-   console.log("OCR RAW:", JSON.stringify(ocrResponse, null, 2));
+  // Logs de diagnóstico para inspecionar o OCR bruto e o resultado
+  // imediato da normalização, antes de qualquer chamada ao LLM.
+  console.log("OCR RAW:", JSON.stringify(ocrResponse, null, 2));
 
-   const debugInput: NormalizationInput = {
-     kind: "ocrSpace",
-     payload: ocrResponse,
-   };
-   const debugNormalized = normalizeOcr(debugInput);
-   console.log("NORMALIZED:", debugNormalized.lines);
+  const debugInput: NormalizationInput = {
+    kind: "ocrSpace",
+    payload: ocrResponse,
+  };
+  const debugNormalized = normalizeOcr(debugInput);
+  console.log("NORMALIZED:", debugNormalized.lines);
 
   const input: NormalizationInput = {
     kind: "ocrSpace",
     payload: ocrResponse,
   };
 
+  let result: BilheteFinal;
+
   if (options.useMockLlm) {
     // Usa o pipeline padrão com MockLlmClient (sem chamadas externas).
-    return processBilhete(input);
+    result = await processBilhete(input);
+  } else {
+    // GroqLlmClient é responsável por ler GROQ_API_KEY internamente.
+    const client = createGroqLlmClient();
+    result = await processBilheteWithClient(input, client);
   }
 
-  // GroqLlmClient é responsável por ler GROQ_API_KEY internamente.
-  const client = createGroqLlmClient();
-  return processBilheteWithClient(input, client);
+  // Armazena o resultado no cache se hash foi gerado
+  if (shouldUseCache && imageHash) {
+    globalTicketCache.set(imageHash, result);
+    console.log(`💾 [CACHE STORE] Bilhete armazenado no cache com hash ${imageHash.substring(0, 8)}...`);
+  }
+
+  return result;
 }
 
 async function runExample(): Promise<void> {
@@ -128,7 +183,7 @@ function createHttpServer() {
   });
 
   app.post("/api/process-image", async (req, res) => {
-    const { imageUrl, useMockLlm } = req.body ?? {};
+    const { imageUrl, useMockLlm, bypassCache } = req.body ?? {};
 
     const isProduction = process.env.NODE_ENV === "production";
     const effectiveUseMockLlm = isProduction ? false : useMockLlm;
@@ -138,7 +193,10 @@ function createHttpServer() {
     }
 
     try {
-      const ticket = await processBilheteFromImageUrl(imageUrl, { useMockLlm: effectiveUseMockLlm });
+      const ticket = await processBilheteFromImageUrl(imageUrl, { 
+        useMockLlm: effectiveUseMockLlm,
+        bypassCache: bypassCache === true 
+      });
       
       // 🔍 DEBUG: Log do bilhete antes de retornar
       console.log('🔍 [BILHETE-TRACKER] Retornando bilhete:');
