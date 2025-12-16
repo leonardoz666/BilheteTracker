@@ -15,6 +15,8 @@ import { globalTicketCache, TicketCache, PARSER_VERSION } from "./utils/ticketCa
 import crypto from "crypto";
 import fetch from "node-fetch";
 
+const DEBUG = process.env.DEBUG_BILHETE === '1';
+
 export { processBilhete, processBilheteWithClient } from "./pipeline";
 export * from "./schema/bilhete.schema";
 
@@ -126,14 +128,15 @@ export async function processBilheteFromImageUrl(
 
   // Logs de diagnóstico para inspecionar o OCR bruto e o resultado
   // imediato da normalização, antes de qualquer chamada ao LLM.
-  console.log("OCR RAW:", JSON.stringify(ocrResponse, null, 2));
-
-  const debugInput: NormalizationInput = {
-    kind: "ocrSpace",
-    payload: ocrResponse,
-  };
-  const debugNormalized = normalizeOcr(debugInput);
-  console.log("NORMALIZED:", debugNormalized.lines);
+  if (DEBUG) {
+    console.log("OCR RAW:", JSON.stringify(ocrResponse, null, 2));
+    const debugInput: NormalizationInput = {
+      kind: "ocrSpace",
+      payload: ocrResponse,
+    };
+    const debugNormalized = normalizeOcr(debugInput);
+    console.log("NORMALIZED:", debugNormalized.lines);
+  }
 
   const input: NormalizationInput = {
     kind: "ocrSpace",
