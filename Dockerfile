@@ -16,8 +16,8 @@ RUN npm install --frozen-lockfile
 COPY . .
 
 
-# Build (caso necessário)
-RUN npm run build || echo "Nenhum script de build definido"
+# Build (sempre do zero)
+RUN rm -rf dist && npm run build
 
 
 # Porta padrão (ajuste se necessário)
