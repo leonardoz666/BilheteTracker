@@ -19,7 +19,12 @@ const DEBUG = process.env.DEBUG_BILHETE === '1';
 // com fallback interno para regex + parser de apostas quando
 // necessário.
 export async function processBilhete(input: NormalizationInput): Promise<BilheteFinal> {
+  const startTotal = performance.now();
+  
+  const startOcr = performance.now();
   const normalized = normalizeOcr(input);
+  const endOcr = performance.now();
+  console.log(`⏱️  [METRICS] Normalização OCR: ${(endOcr - startOcr).toFixed(2)}ms`);
 
   // Log de diagnóstico para inspecionar exatamente o que o normalizeOcr
   // está entregando para o restante do pipeline.
@@ -30,7 +35,15 @@ export async function processBilhete(input: NormalizationInput): Promise<Bilhete
     });
   }
 
-  return semanticTicketLLM({ lines: normalized.lines });
+  const startLlm = performance.now();
+  const result = await semanticTicketLLM({ lines: normalized.lines });
+  const endLlm = performance.now();
+  console.log(`⏱️  [METRICS] LLM Parser: ${(endLlm - startLlm).toFixed(2)}ms`);
+  
+  const endTotal = performance.now();
+  console.log(`⏱️  [METRICS] Tempo Total Pipeline: ${(endTotal - startTotal).toFixed(2)}ms`);
+
+  return result;
 }
 
 // Variante que permite injetar um cliente LLM específico
@@ -40,14 +53,29 @@ export async function processBilheteWithClient(
   input: NormalizationInput,
   client: LlmClient,
 ): Promise<BilheteFinal> {
+  const startTotal = performance.now();
+
+  const startOcr = performance.now();
   const normalized = normalizeOcr(input);
+  const endOcr = performance.now();
+  console.log(`⏱️  [METRICS] Normalização OCR (Client): ${(endOcr - startOcr).toFixed(2)}ms`);
+
   if (DEBUG) {
     console.log("🧪 NORMALIZED LINES (with client) ↓↓↓");
     normalized.lines.forEach((l, i) => {
       console.log(i, JSON.stringify(l));
     });
   }
-  return semanticTicketLLM({ lines: normalized.lines }, client as any);
+  
+  const startLlm = performance.now();
+  const result = await semanticTicketLLM({ lines: normalized.lines }, client as any);
+  const endLlm = performance.now();
+  console.log(`⏱️  [METRICS] LLM Parser (Client): ${(endLlm - startLlm).toFixed(2)}ms`);
+
+  const endTotal = performance.now();
+  console.log(`⏱️  [METRICS] Tempo Total Pipeline (Client): ${(endTotal - startTotal).toFixed(2)}ms`);
+
+  return result;
 }
 
 export * from "../schema/bilhete.schema";
