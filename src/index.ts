@@ -188,7 +188,17 @@ function createHttpServer() {
   app.use(express.json({ limit: "10mb" }));
 
   app.get("/health", (_req, res) => {
-    res.json({ status: "ok", parserVersion: PARSER_VERSION });
+    const ocrKey = !!process.env.OCR_SPACE_API_KEY;
+    const groqKey = !!process.env.GROQ_API_KEY;
+    
+    res.json({ 
+      status: "ok", 
+      parserVersion: PARSER_VERSION,
+      checks: {
+        ocrKeyConfigured: ocrKey,
+        groqKeyConfigured: groqKey
+      }
+    });
   });
 
   app.post("/api/process-image", async (req, res) => {
